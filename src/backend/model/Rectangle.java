@@ -22,4 +22,11 @@ public class Rectangle extends Figure {
         return String.format("Rectángulo [ %s , %s ]", topLeft, bottomRight);
     }
 
+    @Override
+    public void redraw(double diffX, double diffY) {
+        bottomRight.setX(bottomRight.getX() + diffX);
+        bottomRight.setY(bottomRight.getY() + diffY);
+        topLeft.setX(topLeft.getX() + diffX);
+        topLeft.setY(topLeft.getY() + diffY);
+    }
 }

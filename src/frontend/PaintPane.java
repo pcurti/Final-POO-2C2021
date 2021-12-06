@@ -120,22 +120,13 @@ public class PaintPane extends BorderPane {
 			}
 		});
 		canvas.setOnMouseDragged(event -> {
-			if(selectionButton.isSelected()) {
+			if(selectionButton.isSelected() && selectedFigure != null) {
 				Point eventPoint = new Point(event.getX(), event.getY());
-				double diffX = (eventPoint.getX() - startPoint.getX()) / 100;
-				double diffY = (eventPoint.getY() - startPoint.getY()) / 100;
-				if(selectedFigure instanceof Rectangle) {
-					Rectangle rectangle = (Rectangle) selectedFigure;
-					rectangle.getTopLeft().x += diffX;
-					rectangle.getBottomRight().x += diffX;
-					rectangle.getTopLeft().y += diffY;
-					rectangle.getBottomRight().y += diffY;
-				} else if(selectedFigure instanceof Circle) {
-					Circle circle = (Circle) selectedFigure;
-					circle.getCenterPoint().x += diffX;
-					circle.getCenterPoint().y += diffY;
-				}
+				double diffX = (eventPoint.getX() - startPoint.getX());
+				double diffY = (eventPoint.getY() - startPoint.getY());
+				selectedFigure.redraw(diffX, diffY);
 				redrawCanvas();
+				startPoint = eventPoint;
 			}
 		});
 		setLeft(buttonsBox);

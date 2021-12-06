@@ -2,8 +2,8 @@ package backend.model;
 
 public class Circle extends Figure {
 
-    protected final Point centerPoint;
-    protected final double radius;
+    private final Point centerPoint;
+    private final double radius;
 
     public Circle(Point centerPoint, double radius) {
         this.centerPoint = centerPoint;
@@ -23,4 +23,9 @@ public class Circle extends Figure {
         return radius;
     }
 
+    @Override
+    public void redraw(double diffX, double diffY) {
+        centerPoint.setY(centerPoint.getY() + diffY);
+        centerPoint.setX(centerPoint.getX() + diffX);
+    }
 }
