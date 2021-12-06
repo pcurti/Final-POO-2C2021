@@ -1,6 +1,6 @@
 package backend.model;
 
-public class Point {
+public class Point implements Comparable<Point>{
 
     private double x, y;
 
@@ -30,4 +30,11 @@ public class Point {
         return String.format("{%.2f , %.2f}", x, y);
     }
 
+    @Override
+    public int compareTo(Point o) {
+        int c = Double.compare(x, o.getX());
+        if(c == 0)
+            return Double.compare(o.getY(), y);
+        return c;
+    }
 }

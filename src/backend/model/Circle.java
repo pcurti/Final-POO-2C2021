@@ -24,8 +24,23 @@ public class Circle extends Figure {
     }
 
     @Override
-    public void redraw(double diffX, double diffY) {
+    public void changePosition(double diffX, double diffY) {
         centerPoint.setY(centerPoint.getY() + diffY);
         centerPoint.setX(centerPoint.getX() + diffX);
+    }
+
+    @Override
+    public double getArea() {
+        return 0;
+    }
+
+    @Override
+    public double getPerimeter() {
+        return 0;
+    }
+
+    @Override
+    public boolean hasPoint(Point point) {
+        return Math.hypot(centerPoint.getX() - point.getX(), centerPoint.getY() - point.getY()) < radius;
     }
 }

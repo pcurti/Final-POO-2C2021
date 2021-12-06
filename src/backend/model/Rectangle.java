@@ -5,8 +5,15 @@ public class Rectangle extends Figure {
     private final Point topLeft, bottomRight;
 
     public Rectangle(Point topLeft, Point bottomRight) {
-        this.topLeft= topLeft;
-        this.bottomRight = bottomRight;
+        if(topLeft.compareTo(bottomRight)<0) {
+            this.topLeft= topLeft;
+            this.bottomRight = bottomRight;
+        }else {
+            this.topLeft= bottomRight;
+            this.bottomRight = topLeft;
+        }
+
+
     }
 
     public Point getTopLeft() {
@@ -23,10 +30,26 @@ public class Rectangle extends Figure {
     }
 
     @Override
-    public void redraw(double diffX, double diffY) {
+    public void changePosition(double diffX, double diffY) {
         bottomRight.setX(bottomRight.getX() + diffX);
         bottomRight.setY(bottomRight.getY() + diffY);
         topLeft.setX(topLeft.getX() + diffX);
         topLeft.setY(topLeft.getY() + diffY);
+    }
+
+    @Override
+    public double getArea() {
+        return 0;
+    }
+
+    @Override
+    public double getPerimeter() {
+        return 0;
+    }
+
+    @Override
+    public boolean hasPoint(Point point) {
+        return point.getX() > topLeft.getX() && point.getX() < bottomRight.getX() &&
+                point.getY() > topLeft.getY() && point.getY() < bottomRight.getY();
     }
 }
