@@ -5,7 +5,7 @@ public class Rectangle extends Figure {
     private final Point topLeft, bottomRight;
 
     public Rectangle(Point topLeft, Point bottomRight) {
-        this.topLeft = topLeft;
+        this.topLeft= topLeft;
         this.bottomRight = bottomRight;
     }
 
