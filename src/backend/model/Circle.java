@@ -1,5 +1,7 @@
 package backend.model;
 
+import javafx.scene.canvas.GraphicsContext;
+
 public class Circle extends Figure {
 
     private final Point centerPoint;
@@ -42,5 +44,12 @@ public class Circle extends Figure {
     @Override
     public boolean hasPoint(Point point) {
         return Math.hypot(centerPoint.getX() - point.getX(), centerPoint.getY() - point.getY()) < radius;
+    }
+
+    @Override
+    public void draw(GraphicsContext gc) {
+        double diameter = radius * 2;
+        gc.fillOval(centerPoint.getX() - radius, centerPoint.getY() - radius, diameter, diameter);
+        gc.strokeOval(centerPoint.getX() - radius, centerPoint.getY() - radius, diameter, diameter);
     }
 }
