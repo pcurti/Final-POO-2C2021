@@ -20,8 +20,6 @@ public class Line extends Figure{
     }
 
 
-    // y = mx + b
-    //
     @Override
     public boolean hasPoint(Point point) {
         Point ac = new Point(point.getX() - a.getX(), point.getY() - a.getY());
