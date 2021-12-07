@@ -5,6 +5,9 @@ import backend.model.Circle;
 import backend.model.Figure;
 import backend.model.Point;
 import backend.model.Rectangle;
+import frontend.Abstractbutton.AbstractButton;
+import frontend.Abstractbutton.CircleButton;
+import frontend.Abstractbutton.RectangleButton;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -28,8 +31,11 @@ public class PaintPane extends BorderPane {
 
 	// Botones Barra Izquierda
 	ToggleButton selectionButton = new ToggleButton("Seleccionar");
-	ToggleButton rectangleButton = new ToggleButton("Rectángulo");
-	ToggleButton circleButton = new ToggleButton("Círculo");
+	AbstractButton rectangleButton = new RectangleButton("Rectángulo");
+	AbstractButton circleButton = new CircleButton("Círculo");
+	ToggleButton squareButton = new ToggleButton("Cuadrado");
+	ToggleButton lineButton = new ToggleButton("Line");
+	ToggleButton elipseButton = new ToggleButton("Elipse");
 
 	// Dibujar una figura
 	Point startPoint;
@@ -43,7 +49,8 @@ public class PaintPane extends BorderPane {
 	public PaintPane(CanvasState canvasState, StatusPane statusPane) {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
-		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton};
+		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton,squareButton,lineButton,elipseButton};
+		AbstractButton[] figureArray = {rectangleButton, circleButton};
 		ToggleGroup tools = new ToggleGroup();
 		for (ToggleButton tool : toolsArr) {
 			tool.setMinWidth(90);
@@ -65,15 +72,14 @@ public class PaintPane extends BorderPane {
 				return ;
 			}
 			Figure newFigure = null;
-			if(rectangleButton.isSelected()) {
-				newFigure = new Rectangle(startPoint, endPoint);
+			int i = 0;
+			while(i < figureArray.length && !figureArray[i].isSelected()){
+				i++;
 			}
-			else if(circleButton.isSelected()) {
-				double circleRadius = Math.hypot(endPoint.getX() - startPoint.getX(), endPoint.getY() - startPoint.getY());
-				newFigure = new Circle(startPoint, circleRadius);
-			} else {
-				return ;
+			if(i == figureArray.length){
+				return;
 			}
+			newFigure = figureArray[i].createFigure(startPoint,endPoint);
 			canvasState.addFigure(newFigure);
 			startPoint = null;
 			redrawCanvas();
