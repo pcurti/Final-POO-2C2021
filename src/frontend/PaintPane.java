@@ -1,10 +1,8 @@
 package frontend;
 
 import backend.CanvasState;
-import backend.model.Circle;
 import backend.model.Figure;
 import backend.model.Point;
-import backend.model.Rectangle;
 import frontend.Abstractbutton.*;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
@@ -32,11 +30,11 @@ public class PaintPane extends BorderPane {
 
 	// Botones Barra Izquierda
 	ToggleButton selectionButton = new ToggleButton("Seleccionar");
-	AbstractButton rectangleButton = new RectangleButton("Rectángulo");
-	AbstractButton circleButton = new CircleButton("Círculo");
-	AbstractButton squareButton = new SquareButton("Cuadrado");
-	AbstractButton lineButton = new LineButton("Line");
-	AbstractButton ellipseButton = new EllipseButton("Elipse");
+	FigureButton rectangleButton = new RectangleButton();
+	FigureButton circleButton = new CircleButton();
+	FigureButton squareButton = new SquareButton();
+	FigureButton lineButton = new LineButton();
+	FigureButton ellipseButton = new EllipseButton();
 
 	// Dibujar una figura
 	Point startPoint;
@@ -51,7 +49,7 @@ public class PaintPane extends BorderPane {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
 		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton};
-		AbstractButton[] figureArray = {rectangleButton, circleButton, ellipseButton, squareButton, lineButton};
+		FigureButton[] figureArray = {rectangleButton, circleButton, ellipseButton, squareButton, lineButton};
 		ToggleGroup tools = new ToggleGroup();
 		for (ToggleButton tool : toolsArr) {
 			tool.setMinWidth(90);
@@ -128,12 +126,12 @@ public class PaintPane extends BorderPane {
 				}
 				if (found) {
 					statusPane.updateStatus(label.toString());
-					redrawCanvas();
+
 				} else {
 					selectedFigure = null;
 					statusPane.updateStatus("Ninguna figura encontrada");
 				}
-
+				redrawCanvas();
 			}
 		});
 		canvas.setOnMouseDragged(event -> {

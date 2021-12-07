@@ -4,10 +4,10 @@ import backend.model.Figure;
 import backend.model.Point;
 import backend.model.Rectangle;
 
-public class RectangleButton extends AbstractButton{
+public class RectangleButton extends FigureButton {
 
-    public RectangleButton(String name){
-        super(name);
+    public RectangleButton(){
+        super("Rectangulo");
     }
 
 

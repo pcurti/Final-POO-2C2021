@@ -4,10 +4,10 @@ import backend.model.Circle;
 import backend.model.Figure;
 import backend.model.Point;
 
-public class CircleButton extends AbstractButton{
+public class CircleButton extends FigureButton {
 
-    public CircleButton(String name){
-        super(name);
+    public CircleButton(){
+        super("Circulo");
     }
 
     @Override

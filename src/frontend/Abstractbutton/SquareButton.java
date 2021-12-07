@@ -4,10 +4,10 @@ import backend.model.Figure;
 import backend.model.Point;
 import backend.model.Square;
 
-public class SquareButton extends AbstractButton{
+public class SquareButton extends FigureButton {
 
-    public SquareButton(String name) {
-        super(name);
+    public SquareButton() {
+        super("Cuadrado");
     }
 
     @Override
