@@ -12,7 +12,8 @@ public class SquareButton extends FigureButton {
 
     @Override
     public Figure createFigure(Point startpoint, Point endpoint) {
-
+        if(!validPoints(startpoint, endpoint))
+            return null;
         return new Square(startpoint, endpoint.getX()- startpoint.getX());
     }
 

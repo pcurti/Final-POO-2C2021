@@ -11,7 +11,8 @@ public class EllipseButton extends FigureButton {
 
     @Override
     public Figure createFigure(Point startpoint, Point endpoint) {
-
+        if(!validPoints(startpoint, endpoint))
+            return null;
         return new Ellipse(startpoint, endpoint);
     }
 }

@@ -11,4 +11,8 @@ public abstract class FigureButton extends ToggleButton {
     }
 
     public abstract Figure createFigure(Point startpoint, Point endpoint);
+
+    protected boolean validPoints(Point startPoint, Point endPoint) {
+        return startPoint.getX() < endPoint.getX() && startPoint.getY() <  endPoint.getY();
+    }
 }

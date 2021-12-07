@@ -91,6 +91,8 @@ public class PaintPane extends BorderPane {
 				return;
 			}
 			newFigure = figureArray[i].createFigure(startPoint,endPoint);
+			if(newFigure == null)
+				return;
 			canvasState.addFigure(newFigure);
 			startPoint = null;
 			redrawCanvas();
