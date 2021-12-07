@@ -16,7 +16,7 @@ public class Line extends Figure{
 
     @Override
     public double getPerimeter() {
-        return getLength();
+        return 0;
     }
 
     @Override

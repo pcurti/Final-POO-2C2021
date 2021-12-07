@@ -14,8 +14,6 @@ public class Rectangle extends Figure {
             this.topLeft= bottomRight;
             this.bottomRight = topLeft;
         }
-
-
     }
 
     public Point getTopLeft() {
