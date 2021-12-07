@@ -7,13 +7,8 @@ public class Rectangle extends Figure {
     private final Point topLeft, bottomRight;
 
     public Rectangle(Point topLeft, Point bottomRight) {
-        if(topLeft.compareTo(bottomRight)<0) {
-            this.topLeft= topLeft;
-            this.bottomRight = bottomRight;
-        }else {
-            this.topLeft= bottomRight;
-            this.bottomRight = topLeft;
-        }
+        this.topLeft= topLeft;
+        this.bottomRight = bottomRight;
     }
 
     public Point getTopLeft() {
@@ -37,15 +32,7 @@ public class Rectangle extends Figure {
         topLeft.setY(topLeft.getY() + diffY);
     }
 
-    @Override
-    public double getArea() {
-        return 0;
-    }
 
-    @Override
-    public double getPerimeter() {
-        return 0;
-    }
 
     @Override
     public boolean hasPoint(Point point) {
@@ -59,11 +46,11 @@ public class Rectangle extends Figure {
         gc.strokeRect(topLeft.getX(), topLeft.getY(), base(), height());
     }
 
-    private double base() {
+    protected double base() {
         return Math.abs(bottomRight.getX() - topLeft.getX());
     }
 
-    private double height() {
+    protected double height() {
         return Math.abs(topLeft.getY() - bottomRight.getY());
     }
 }

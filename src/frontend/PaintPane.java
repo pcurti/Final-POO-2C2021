@@ -5,10 +5,7 @@ import backend.model.Circle;
 import backend.model.Figure;
 import backend.model.Point;
 import backend.model.Rectangle;
-import frontend.Abstractbutton.AbstractButton;
-import frontend.Abstractbutton.CircleButton;
-import frontend.Abstractbutton.EllipseButton;
-import frontend.Abstractbutton.RectangleButton;
+import frontend.Abstractbutton.*;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -34,8 +31,8 @@ public class PaintPane extends BorderPane {
 	ToggleButton selectionButton = new ToggleButton("Seleccionar");
 	AbstractButton rectangleButton = new RectangleButton("Rectángulo");
 	AbstractButton circleButton = new CircleButton("Círculo");
-	ToggleButton squareButton = new ToggleButton("Cuadrado");
-	ToggleButton lineButton = new ToggleButton("Line");
+	AbstractButton squareButton = new SquareButton("Cuadrado");
+	AbstractButton lineButton = new LineButton("Line");
 	AbstractButton ellipseButton = new EllipseButton("Elipse");
 
 	// Dibujar una figura
@@ -50,8 +47,8 @@ public class PaintPane extends BorderPane {
 	public PaintPane(CanvasState canvasState, StatusPane statusPane) {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
-		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton,squareButton,lineButton,ellipseButton};
-		AbstractButton[] figureArray = {rectangleButton, circleButton, ellipseButton};
+		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton};
+		AbstractButton[] figureArray = {rectangleButton, circleButton, ellipseButton, squareButton, lineButton};
 		ToggleGroup tools = new ToggleGroup();
 		for (ToggleButton tool : toolsArr) {
 			tool.setMinWidth(90);
