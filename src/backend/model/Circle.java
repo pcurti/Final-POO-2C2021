@@ -42,4 +42,12 @@ public class Circle extends Figure {
         gc.fillOval(centerPoint.getX() - radius, centerPoint.getY() - radius, diameter, diameter);
         gc.strokeOval(centerPoint.getX() - radius, centerPoint.getY() - radius, diameter, diameter);
     }
+
+    @Override
+    public boolean isContainedIn(Rectangle container) {
+        Point topLeft = new Point(centerPoint.getX() - radius, centerPoint.getY() - radius);
+        Point bottomRight = new Point(centerPoint.getX() + radius, centerPoint.getY() + radius);
+        return container.hasPoint(topLeft) && container.hasPoint(bottomRight);
+    }
+
 }
