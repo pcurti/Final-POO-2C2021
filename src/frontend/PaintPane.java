@@ -17,6 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class PaintPane extends BorderPane {
 	ToggleButton lineButton = new ToggleButton("Linea");
 	ToggleButton ellipseButton = new ToggleButton("Elipse");
 	ToggleButton deleteFigure = new ToggleButton("Eliminar");
+	ToggleButton toFront = new ToggleButton("Traer al frente");
+	ToggleButton toBack = new ToggleButton("Enviar al fondo");
 
 	//Modification tools
 	Slider slider = new Slider(1, 50, 26);
@@ -61,7 +64,7 @@ public class PaintPane extends BorderPane {
 	public PaintPane(CanvasState canvasState, StatusPane statusPane) {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
-		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton, deleteFigure};
+		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton, deleteFigure,toBack,toFront};
 
 		ToggleGroup tools = new ToggleGroup();
 		for (ToggleButton tool : toolsArr) {
@@ -70,6 +73,8 @@ public class PaintPane extends BorderPane {
 			tool.setCursor(Cursor.HAND);
 		}
 		deleteFigure.setToggleGroup(null);
+		toBack.setToggleGroup(null);
+		toFront.setToggleGroup(null);
 		rectangleButton.setUserData(new RectangleHandler(this));
 		circleButton.setUserData(new CircleHandler(this));
 		squareButton.setUserData(new SquareHandler(this));
@@ -111,6 +116,26 @@ public class PaintPane extends BorderPane {
 			}
 			deleteFigure.setSelected(false);
 		});
+		toFront.setOnAction(actionEvent ->{
+			if(!selectedFigureList.isEmpty()){
+				for(Figure figure: selectedFigureList) {
+					canvasState.removeFigure(figure);
+					canvasState.addFigure(figure);
+				}
+				redrawCanvas();
+			}
+			toFront.setSelected(false);
+		} );
+		toBack.setOnAction(actionEvent ->{
+			if(!selectedFigureList.isEmpty()){
+				for(Figure figure: selectedFigureList) {
+					canvasState.removeFigure(figure);
+					canvasState.moveToBack(figure);
+				}
+				redrawCanvas();
+			}
+			toBack.setSelected(false);
+		} );
 		setCanvasEvents(tools);
 
 		setLeft(buttonsBox);
@@ -167,13 +192,17 @@ public class PaintPane extends BorderPane {
 					Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
 					boolean found = false;
 					StringBuilder label = new StringBuilder("Se seleccionó: ");
-					for (Figure figure : canvasState.figures()) {
+
+					Iterator<Figure> it= canvasState.reverseFigures().iterator();
+					Figure figure = it.next();
+					while(it.hasNext() && !found) {
 						if (figure.hasPoint(eventPoint)) {
 							found = true;
 							selectedFigureList.add(figure);
 							figure.select();
 							label.append(figure.toString());
 						}
+						figure = it.next();
 					}
 					if (found) {
 						statusPane.updateStatus(label.toString());
