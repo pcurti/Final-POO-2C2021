@@ -3,6 +3,7 @@ package frontend;
 import backend.CanvasState;
 import backend.model.Figure;
 import backend.model.Point;
+import backend.model.Rectangle;
 import frontend.FigureHandler.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +18,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class PaintPane extends BorderPane {
 
@@ -36,6 +41,7 @@ public class PaintPane extends BorderPane {
 	ToggleButton squareButton = new ToggleButton("Cuadrado");
 	ToggleButton lineButton = new ToggleButton("Linea");
 	ToggleButton ellipseButton = new ToggleButton("Elipse");
+	ToggleButton deleteFigure = new ToggleButton("Eliminar");
 
 	//Modification tools
 	Slider slider = new Slider(1, 50, 26);
@@ -52,10 +58,13 @@ public class PaintPane extends BorderPane {
 	// StatusBar
 	StatusPane statusPane;
 
+	// Selected figure set
+	List<Figure> selectedFigureSet = new ArrayList<>();
+
 	public PaintPane(CanvasState canvasState, StatusPane statusPane) {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
-		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton};
+		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton,deleteFigure};
 
 		ToggleGroup tools = new ToggleGroup();
 		for (ToggleButton tool : toolsArr) {
@@ -128,11 +137,13 @@ public class PaintPane extends BorderPane {
 		return new EventHandler<javafx.scene.input.MouseEvent>() {
 			@Override
 			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				if(selectionButton.isSelected() && selectedFigure != null) {
+				if(selectionButton.isSelected() && !selectedFigureSet.isEmpty()) {
 				Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
 				double diffX = (eventPoint.getX() - startPoint.getX());
 				double diffY = (eventPoint.getY() - startPoint.getY());
-				selectedFigure.changePosition(diffX, diffY);
+				for(Figure figure : selectedFigureSet) {
+					figure.changePosition(diffX, diffY);
+				}
 				redrawCanvas();
 				startPoint = eventPoint;
 			}
@@ -145,8 +156,12 @@ public class PaintPane extends BorderPane {
 		return new EventHandler<javafx.scene.input.MouseEvent>() {
 			@Override
 			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				if (selectedFigure != null)
-					selectedFigure.unSelect();
+				if (!selectedFigureSet.isEmpty()) {
+					for (Figure figure : selectedFigureSet) {
+						figure.unSelect();
+					}
+					selectedFigureSet.clear();
+				}
 				if (selectionButton.isSelected()) {
 					Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
 					boolean found = false;
@@ -154,15 +169,15 @@ public class PaintPane extends BorderPane {
 					for (Figure figure : canvasState.figures()) {
 						if (figure.hasPoint(eventPoint)) {
 							found = true;
-							selectedFigure = figure;
-							selectedFigure.select();
+							selectedFigureSet.add(figure);
+							figure.select();
 							label.append(figure.toString());
 						}
 					}
 					if (found) {
 						statusPane.updateStatus(label.toString());
 					} else {
-						selectedFigure = null;
+						selectedFigureSet.clear();
 						statusPane.updateStatus("Ninguna figura encontrada");
 					}
 					redrawCanvas();
@@ -199,15 +214,27 @@ public class PaintPane extends BorderPane {
 			@Override
 			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
 				Point endPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-				if(startPoint == null) {
-					return ;
+				if(startPoint == null){
+					return;
 				}
 				Figure newFigure = null;
-				int i = 0;
 				Toggle selected = tools.getSelectedToggle();
 				if(selected == null)
 					return;
 				if(selectionButton.isSelected()) {
+					Rectangle areaSelected =(Rectangle)((FigureHandler)rectangleButton.getUserData()).createFigure(startPoint,endPoint);
+					if(areaSelected == null){
+						return;
+					}
+					StringBuilder label = new StringBuilder();
+					for(Figure figure : canvasState.figures()){
+						if(figure.isContainedIn(areaSelected)){
+							label.append(figure.toString());
+							selectedFigureSet.add(figure);
+							figure.select();
+						}
+						label.append(",");
+					}
 					redrawCanvas();
 					return;
 				}
@@ -219,8 +246,8 @@ public class PaintPane extends BorderPane {
 				if(newFigure == null)
 					return;
 				canvasState.addFigure(newFigure);
-				startPoint = null;
 				redrawCanvas();
+				startPoint = null;
 			}
 		};
 	}
@@ -239,8 +266,11 @@ public class PaintPane extends BorderPane {
 		return new ChangeListener<Color>() {
 			@Override
 			public void changed(ObservableValue<? extends Color> observableValue, Color color, Color t1) {
-				if(selectedFigure != null) {
-					selectedFigure.setFillColor(fillPicker.getValue());
+				if(!selectedFigureSet.isEmpty()) {
+					for(Figure figure : selectedFigureSet) {
+						figure.setFillColor(fillPicker.getValue());
+					}
+					redrawCanvas();
 				}
 			}
 		};
@@ -250,8 +280,11 @@ public class PaintPane extends BorderPane {
 		return new ChangeListener<Color>() {
 			@Override
 			public void changed(ObservableValue<? extends Color> observableValue, Color color, Color t1) {
-				if(selectedFigure != null) {
-					selectedFigure.setBorderColor(borderPicker.getValue());
+				if(!selectedFigureSet.isEmpty() ) {
+					for(Figure figure : selectedFigureSet) {
+						figure.setBorderColor(borderPicker.getValue());
+					}
+					redrawCanvas();
 				}
 			}
 		};
@@ -262,8 +295,10 @@ public class PaintPane extends BorderPane {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
 				if(!slider.isValueChanging()) {
-					if(selectedFigure != null) {
-						selectedFigure.setBorderWidth(slider.getValue());
+					if(!selectedFigureSet.isEmpty()) {
+						for(Figure figure : selectedFigureSet) {
+							figure.setBorderWidth(slider.getValue());
+						}
 						redrawCanvas();
 					}
 				}
