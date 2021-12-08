@@ -194,15 +194,16 @@ public class PaintPane extends BorderPane {
 					StringBuilder label = new StringBuilder("Se seleccionó: ");
 
 					Iterator<Figure> it= canvasState.reverseFigures().iterator();
-					Figure figure = it.next();
+					Figure figure;
 					while(it.hasNext() && !found) {
+						figure = it.next();
 						if (figure.hasPoint(eventPoint)) {
 							found = true;
 							selectedFigureList.add(figure);
 							figure.select();
 							label.append(figure.toString());
 						}
-						figure = it.next();
+
 					}
 					if (found) {
 						statusPane.updateStatus(label.toString());
