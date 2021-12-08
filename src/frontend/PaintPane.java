@@ -3,7 +3,6 @@ package frontend;
 import backend.CanvasState;
 import backend.model.Figure;
 import backend.model.Point;
-import backend.model.Rectangle;
 import frontend.FigureHandler.*;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
@@ -35,7 +34,8 @@ public class PaintPane extends BorderPane {
 
 	//Modification tools
 	Slider slider = new Slider(1, 50, 26);
-	final ColorPicker colorPicker = new ColorPicker();
+	final ColorPicker fillPicker = new ColorPicker();
+	final ColorPicker borderPicker = new ColorPicker();
 
 
 	// Dibujar una figura
@@ -77,12 +77,15 @@ public class PaintPane extends BorderPane {
 		slider.setBlockIncrement(0.1f);
 		buttonsBox.getChildren().add(new Label("Border"));
 		buttonsBox.getChildren().add(slider);
+		borderPicker.getStyleClass().add("button");
+		buttonsBox.getChildren().add(borderPicker);
 
-		colorPicker.getStyleClass().add("button");
+		fillPicker.getStyleClass().add("button");
 		buttonsBox.getChildren().add(new Label("Relleno"));
-		buttonsBox.getChildren().add(colorPicker);
+		buttonsBox.getChildren().add(fillPicker);
 		slider.setValue(1);
-		colorPicker.setValue(fillColor);
+		fillPicker.setValue(fillColor);
+		borderPicker.setValue(lineColor);
 		canvas.setOnMousePressed(event -> {
 			startPoint = new Point(event.getX(), event.getY());
 		});
@@ -101,8 +104,8 @@ public class PaintPane extends BorderPane {
 				return;
 			}
 
-			gc.setFill(colorPicker.getValue());
-			gc.setStroke(lineColor);
+			gc.setFill(fillPicker.getValue());
+			gc.setStroke(borderPicker.getValue());
 			gc.setLineWidth(slider.getValue());
 			newFigure =  ((FigureHandler) selected.getUserData()).createFigure(startPoint, endPoint);
 			if(newFigure == null)
