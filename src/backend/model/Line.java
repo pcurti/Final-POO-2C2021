@@ -39,6 +39,11 @@ public class Line extends Figure{
     }
 
     @Override
+    public boolean isContainedIn(Rectangle container) {
+        return container.hasPoint(a) && container.hasPoint(b);
+    }
+
+    @Override
     public String toString() {
         return String.format("Line [%s, %s]", a, b);
     }

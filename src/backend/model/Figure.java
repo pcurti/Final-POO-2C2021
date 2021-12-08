@@ -48,7 +48,7 @@ public abstract class Figure implements DrawingProperties {
                         gc.setStroke(Color.RED);
                 draw(gc);
         }
-
+        public abstract boolean isContainedIn(Rectangle container);
         public void select() {
                 selected = true;
         }

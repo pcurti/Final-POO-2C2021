@@ -46,6 +46,11 @@ public class Rectangle extends Figure {
         gc.strokeRect(topLeft.getX(), topLeft.getY(), base(), height());
     }
 
+    @Override
+    public boolean isContainedIn(Rectangle container) {
+        return container.hasPoint(topLeft) && container.hasPoint(bottomRight);
+    }
+
     protected double base() {
         return Math.abs(bottomRight.getX() - topLeft.getX());
     }

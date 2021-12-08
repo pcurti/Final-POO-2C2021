@@ -24,6 +24,7 @@ public abstract class FigureHandler {
         return figure;
     }
     public abstract Figure getFigureConstructor(Point startPoint, Point endPoint);
+
     protected boolean validPoints(Point startPoint, Point endPoint) {
         return startPoint.getX() < endPoint.getX() && startPoint.getY() <  endPoint.getY();
     }
