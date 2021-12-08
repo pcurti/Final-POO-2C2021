@@ -37,7 +37,7 @@ public class Circle extends Figure {
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
+    protected void draw(GraphicsContext gc) {
         double diameter = radius * 2;
         gc.fillOval(centerPoint.getX() - radius, centerPoint.getY() - radius, diameter, diameter);
         gc.strokeOval(centerPoint.getX() - radius, centerPoint.getY() - radius, diameter, diameter);

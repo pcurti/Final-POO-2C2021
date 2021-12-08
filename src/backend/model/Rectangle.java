@@ -41,7 +41,7 @@ public class Rectangle extends Figure {
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
+    protected void draw(GraphicsContext gc) {
         gc.fillRect(topLeft.getX(), topLeft.getY(), base(), height());
         gc.strokeRect(topLeft.getX(), topLeft.getY(), base(), height());
     }

@@ -34,7 +34,7 @@ public class Line extends Figure{
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
+    protected void draw(GraphicsContext gc) {
         gc.strokeLine(a.getX(), a.getY(), b.getX(), b.getY());
     }
 

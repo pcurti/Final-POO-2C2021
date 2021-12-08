@@ -19,7 +19,7 @@ public class Ellipse extends Rectangle{
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
+    protected void draw(GraphicsContext gc) {
         gc.fillOval(getTopLeft().getX(), getTopLeft().getY(), base(), height());
         gc.strokeOval(getTopLeft().getX(), getTopLeft().getY(), base(), height());
     }
