@@ -14,8 +14,21 @@ public class CanvasState {
     public void addFigure(Figure figure) {
         list.add(figure);
     }
+
+    public void removeFigure(Figure figure) {
+        list.remove(figure);
+    }
+
+    public void addFigures(Figure[] figures) {
+        list.addAll(List.of(figures));
+    }
+
+    public void removeFigures(Figure[] figures) {
+        list.removeAll(List.of(figures));
+    }
+
     public void moveToBack(Figure figure){ ((LinkedList) list).addFirst(figure);}
-    public void removeFigure(Figure figure) { list.remove(figure); }
+
     public Iterable<Figure> figures() {
         return new ArrayList<>(list);
     }

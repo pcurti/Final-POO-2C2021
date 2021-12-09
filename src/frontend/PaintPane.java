@@ -52,9 +52,6 @@ public class PaintPane extends BorderPane {
 	// Dibujar una figura
 	Point startPoint;
 
-	// Seleccionar una figura
-	Figure selectedFigure;
-
 	// StatusBar
 	StatusPane statusPane;
 
@@ -86,7 +83,6 @@ public class PaintPane extends BorderPane {
 		buttonsBox.setStyle("-fx-background-color: #999");
 		buttonsBox.setPrefWidth(100);
 		gc.setLineWidth(1);
-
 		slider.setShowTickMarks(true);
 		slider.setShowTickLabels(true);
 		slider.setMajorTickUnit(25);
@@ -201,7 +197,7 @@ public class PaintPane extends BorderPane {
 							found = true;
 							selectedFigureList.add(figure);
 							figure.select();
-							label.append(figure.toString());
+							label.append(figure);
 						}
 
 					}
@@ -340,5 +336,14 @@ public class PaintPane extends BorderPane {
 				}
 			}
 		};
+	}
+
+	public void addFigure(Figure figure) {
+		canvasState.addFigure(figure);
+		redrawCanvas();
+	}
+	public void removeFigure(Figure figure) {
+		canvasState.removeFigure(figure);
+		redrawCanvas();
 	}
 }
