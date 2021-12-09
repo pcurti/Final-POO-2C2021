@@ -4,8 +4,8 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Ellipse extends Rectangle{
 
-    public Ellipse(Point startPoint, Point endPoint) {
-        super(startPoint, endPoint);
+    public Ellipse(Point[]points) {
+        super(points);
     }
 
 

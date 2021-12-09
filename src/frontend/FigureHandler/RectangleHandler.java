@@ -15,6 +15,7 @@ public class RectangleHandler extends FigureHandler{
     public Figure getFigureConstructor(Point startPoint, Point endPoint) {
         if(!validPoints(startPoint, endPoint))
             return null;
-        return new Rectangle(startPoint,endPoint);
+
+        return new Rectangle(new Point[]{startPoint, endPoint});
     }
 }

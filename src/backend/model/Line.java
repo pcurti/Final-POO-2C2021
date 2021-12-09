@@ -6,18 +6,13 @@ public class Line extends Figure{
 
     private Point a, b;
     private final static double CLICK_HELPER = 2;
-    public Line(Point a, Point b) {
-        this.a = a;
-        this.b = b;
+
+    public Line(Point[]points) {
+        super(points);
+        this.a = points[0];
+        this.b = points[1];
     }
 
-    @Override
-    public void changePosition(double diffX, double diffY) {
-        a.setX(a.getX() + diffX);
-        a.setY(a.getY() + diffY);
-        b.setX(b.getX() + diffX);
-        b.setY(b.getY() + diffY);
-    }
 
 
     @Override

@@ -6,16 +6,17 @@ public class Rectangle extends Figure {
 
     private final Point topLeft, bottomRight;
 
-    public Rectangle(Point topLeft, Point bottomRight) {
-        this.topLeft= topLeft;
-        this.bottomRight = bottomRight;
+    public Rectangle(Point[]points) {
+        super(points);
+        topLeft = points[0];
+        bottomRight = points[1];
     }
 
-    public Point getTopLeft() {
+    protected Point getTopLeft() {
         return topLeft;
     }
 
-    public Point getBottomRight() {
+    protected Point getBottomRight() {
         return bottomRight;
     }
 
@@ -23,16 +24,6 @@ public class Rectangle extends Figure {
     public String toString() {
         return String.format("Rectángulo [ %s , %s ]", topLeft, bottomRight);
     }
-
-    @Override
-    public void changePosition(double diffX, double diffY) {
-        bottomRight.setX(bottomRight.getX() + diffX);
-        bottomRight.setY(bottomRight.getY() + diffY);
-        topLeft.setX(topLeft.getX() + diffX);
-        topLeft.setY(topLeft.getY() + diffY);
-    }
-
-
 
     @Override
     public boolean hasPoint(Point point) {

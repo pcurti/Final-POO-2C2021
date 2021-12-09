@@ -14,6 +14,8 @@ public class SquareHandler extends FigureHandler{
     public Figure getFigureConstructor(Point startPoint, Point endPoint) {
         if(!validPoints(startPoint, endPoint))
             return null;
-        return new Square(startPoint, endPoint.getX()- startPoint.getX());
+        double side = endPoint.getX() - startPoint.getX();
+        Point aux= new Point(startPoint.getX() + side, startPoint.getY() + side);
+        return new Square(new Point[]{startPoint, aux});
     }
 }

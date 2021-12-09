@@ -1,6 +1,7 @@
 package frontend;
 
 import backend.CanvasState;
+import backend.canvasHistory.CanvasHistory;
 import backend.model.Figure;
 import backend.model.Point;
 import backend.model.Rectangle;
@@ -25,6 +26,7 @@ public class PaintPane extends BorderPane {
 
 	// BackEnd
 	CanvasState canvasState;
+	CanvasHistory canvasHistory;
 
 	// Canvas y relacionados
 	Canvas canvas = new Canvas(800, 600);
@@ -42,6 +44,8 @@ public class PaintPane extends BorderPane {
 	ToggleButton deleteFigure = new ToggleButton("Eliminar");
 	ToggleButton toFront = new ToggleButton("Traer al frente");
 	ToggleButton toBack = new ToggleButton("Enviar al fondo");
+	ToggleButton undo = new ToggleButton("Deshacer");
+	ToggleButton redo = new ToggleButton("Rehacer");
 
 	//Modification tools
 	Slider slider = new Slider(1, 50, 26);
@@ -61,15 +65,20 @@ public class PaintPane extends BorderPane {
 	public PaintPane(CanvasState canvasState, StatusPane statusPane) {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
-		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton, deleteFigure,toBack,toFront};
-
+		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton, deleteFigure,toBack,toFront, undo, redo};
+		canvasHistory = new CanvasHistory();
+		canvasHistory.addHistory(getCanvasState());
 		ToggleGroup tools = new ToggleGroup();
+
 		for (ToggleButton tool : toolsArr) {
 			tool.setMinWidth(90);
 			tool.setToggleGroup(tools);
 			tool.setCursor(Cursor.HAND);
 		}
+
 		deleteFigure.setToggleGroup(null);
+		undo.setToggleGroup(null);
+		redo.setToggleGroup(null);
 		toBack.setToggleGroup(null);
 		toFront.setToggleGroup(null);
 		rectangleButton.setUserData(new RectangleHandler(this));
@@ -102,33 +111,60 @@ public class PaintPane extends BorderPane {
 		slider.valueChangingProperty().addListener(strokeListener());
 		borderPicker.valueProperty().addListener(borderListener());
 		fillPicker.valueProperty().addListener(fillListener());
+
+
+		undo.setOnAction(actionEvent -> {
+			if(canvasHistory.canUndo()) {
+				System.out.println("Will undo");
+				setCanvasState(canvasHistory.getPreviousState());
+				redrawCanvas();
+			}
+			undo.setSelected(false);
+		});
+
+		redo.setOnAction(actionEvent -> {
+			if(canvasHistory.canRedo()) {
+				System.out.println("Will redo");
+				setCanvasState(canvasHistory.getNextState());
+				redrawCanvas();
+			}
+			redo.setSelected(false);
+		});
+
+
 		deleteFigure.setOnAction(actionEvent -> {
 			if(!selectedFigureList.isEmpty()) {
+
 				for(Figure figure: selectedFigureList) {
-					canvasState.removeFigure(figure);
+					this.canvasState.removeFigure(figure);
 				}
 				selectedFigureList.clear();
 				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
 			}
 			deleteFigure.setSelected(false);
 		});
 		toFront.setOnAction(actionEvent ->{
 			if(!selectedFigureList.isEmpty()){
+
 				for(Figure figure: selectedFigureList) {
-					canvasState.removeFigure(figure);
-					canvasState.addFigure(figure);
+					this.canvasState.removeFigure(figure);
+					this.canvasState.addFigure(figure);
 				}
 				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
 			}
 			toFront.setSelected(false);
 		} );
 		toBack.setOnAction(actionEvent ->{
 			if(!selectedFigureList.isEmpty()){
+
 				for(Figure figure: selectedFigureList) {
-					canvasState.removeFigure(figure);
-					canvasState.moveToBack(figure);
+					this.canvasState.removeFigure(figure);
+					this.canvasState.moveToBack(figure);
 				}
 				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
 			}
 			toBack.setSelected(false);
 		} );
@@ -140,8 +176,7 @@ public class PaintPane extends BorderPane {
 
 	private void redrawCanvas() {
 		gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-		for(Figure figure : canvasState.figures()) {
+		for(Figure figure : this.canvasState.figures()) {
 			figure.drawFigure(gc);
 		}
 	}
@@ -172,6 +207,8 @@ public class PaintPane extends BorderPane {
 					figure.changePosition(diffX, diffY);
 				}
 				redrawCanvas();
+
+
 				startPoint = eventPoint;
 			}
 			}
@@ -249,6 +286,7 @@ public class PaintPane extends BorderPane {
 				if(selected == null)
 					return;
 				unselectFigureList();
+
 				if(selectionButton.isSelected()) {
 					Rectangle areaSelected =(Rectangle)((FigureHandler)rectangleButton.getUserData()).createFigure(startPoint,endPoint);
 					if(areaSelected == null){
@@ -273,8 +311,10 @@ public class PaintPane extends BorderPane {
 				newFigure =  ((FigureHandler) selected.getUserData()).createFigure(startPoint, endPoint);
 				if(newFigure == null)
 					return;
+
 				canvasState.addFigure(newFigure);
 				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
 				startPoint = null;
 			}
 		};
@@ -338,12 +378,13 @@ public class PaintPane extends BorderPane {
 		};
 	}
 
-	public void addFigure(Figure figure) {
-		canvasState.addFigure(figure);
-		redrawCanvas();
+
+	private CanvasState getCanvasState() {
+		return canvasState.clone();
 	}
-	public void removeFigure(Figure figure) {
-		canvasState.removeFigure(figure);
-		redrawCanvas();
+
+	private void setCanvasState(CanvasState state) {
+		canvasState = state;
 	}
+
 }

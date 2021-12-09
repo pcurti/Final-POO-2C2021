@@ -1,10 +1,8 @@
 package frontend.FigureHandler;
 
-import backend.CanvasState;
 import backend.model.Figure;
 import backend.model.Point;
 import frontend.PaintPane;
-import javafx.scene.canvas.GraphicsContext;
 
 import javafx.scene.paint.Color;
 

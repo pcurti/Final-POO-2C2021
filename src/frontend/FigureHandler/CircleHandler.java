@@ -13,6 +13,6 @@ public class CircleHandler extends FigureHandler{
     @Override
     public Figure getFigureConstructor(Point startPoint, Point endPoint) {
         double circleRadius = Math.hypot(endPoint.getX() - startPoint.getX(), endPoint.getY() - startPoint.getY());
-        return new Circle(startPoint,circleRadius);
+        return new Circle(new Point[]{startPoint},circleRadius);
     }
 }

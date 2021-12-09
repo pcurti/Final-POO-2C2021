@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CanvasState {
+public class CanvasState{
 
     private final List<Figure> list = new LinkedList<>();
 
@@ -32,6 +32,7 @@ public class CanvasState {
     public Iterable<Figure> figures() {
         return new ArrayList<>(list);
     }
+
     public Iterable<Figure> reverseFigures(){
         Iterator<Figure> it = ((LinkedList)list).descendingIterator();
         List<Figure> toReturn = new ArrayList<>();
@@ -39,5 +40,15 @@ public class CanvasState {
             toReturn.add(it.next());
         }
         return toReturn;
+    }
+
+
+    public CanvasState clone() {
+        CanvasState clone = new CanvasState();
+        clone.list.clear();
+        for (Figure figure : figures()) {
+            clone.list.add(figure.clone());
+        }
+        return clone;
     }
 }
