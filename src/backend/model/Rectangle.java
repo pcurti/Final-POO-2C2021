@@ -22,8 +22,28 @@ public class Rectangle extends Figure {
     }
 
     @Override
-    public String toString() {
-        return String.format("Rectángulo [ %s , %s ]", topLeft, bottomRight);
+    public Rectangle getClone(){
+        Rectangle clone = new Rectangle(new Point[points.length]);
+        //copying points
+        clone.points = getClonedPoints();
+        clone.topLeft=clone.points[0];
+        clone.bottomRight=clone.points[1];
+        //copying drawing properties
+        Color border = cloneColor(getBorderColor());
+        Color fill = cloneColor(getFillColor());
+        clone.setDrawingProperties(fill, border, getBorderWidth());
+        //default to be unselected
+        clone.unSelect();
+        // TODO: copy mutable state here, so the clone can't change the internals of the original
+        return clone;
+    }
+
+    protected double base() {
+        return Math.abs(bottomRight.getX() - topLeft.getX());
+    }
+
+    protected double height() {
+        return Math.abs(topLeft.getY() - bottomRight.getY());
     }
 
     @Override
@@ -38,35 +58,10 @@ public class Rectangle extends Figure {
         gc.strokeRect(topLeft.getX(), topLeft.getY(), base(), height());
     }
 
-    @Override
-    public boolean isContainedIn(Rectangle container) {
-        return container.hasPoint(topLeft) && container.hasPoint(bottomRight);
-    }
-
-    protected double base() {
-        return Math.abs(bottomRight.getX() - topLeft.getX());
-    }
-
-    protected double height() {
-        return Math.abs(topLeft.getY() - bottomRight.getY());
-    }
 
     @Override
-    public Rectangle getClone(){
-        Rectangle clone = new Rectangle(new Point[points.length]);
-        //copying points
-        clone.points = getClonedPoints();
-
-        clone.topLeft=clone.points[0];
-        clone.bottomRight=clone.points[1];
-        //copying drawing properties
-        Color border = new Color(getBorderColor().getRed(), getBorderColor().getGreen(), getBorderColor().getBlue(), getBorderColor().getOpacity());
-        Color fill = new Color(getFillColor().getRed(), getFillColor().getGreen(), getFillColor().getBlue(), getFillColor().getOpacity());
-        clone.setDrawingProperties(fill, border, getBorderWidth());
-        //default to be unselected
-        clone.unSelect();
-        // TODO: copy mutable state here, so the clone can't change the internals of the original
-        return clone;
+    public String toString() {
+        return String.format("Rectángulo [ %s , %s ]", topLeft, bottomRight);
     }
 
 }

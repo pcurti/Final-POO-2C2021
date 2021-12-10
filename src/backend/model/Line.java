@@ -14,6 +14,23 @@ public class Line extends Figure{
         this.b = points[1];
     }
 
+    @Override
+    public Line getClone(){
+        Line clone = new Line(new Point[points.length]);
+        //copying points
+        clone.points = getClonedPoints();
+        clone.a=clone.points[0];
+        clone.b=clone.points[1];
+        //copying drawing properties
+        Color border = cloneColor(getBorderColor());
+        Color fill = cloneColor(getFillColor());
+        clone.setDrawingProperties(fill, border, getBorderWidth());
+        //default to be unselected
+        clone.unSelect();
+        // TODO: copy mutable state here, so the clone can't change the internals of the original
+        return clone;
+    }
+
 
 
     @Override
@@ -35,28 +52,7 @@ public class Line extends Figure{
     }
 
     @Override
-    public boolean isContainedIn(Rectangle container) {
-        return container.hasPoint(a) && container.hasPoint(b);
-    }
-
-    @Override
     public String toString() {
         return String.format("Line [%s, %s]", a, b);
-    }
-    @Override
-    public Line getClone(){
-        Line clone = new Line(new Point[points.length]);
-        //copying points
-        clone.points = getClonedPoints();
-        clone.a=clone.points[0];
-        clone.b=clone.points[1];
-        //copying drawing properties
-        Color border = new Color(getBorderColor().getRed(), getBorderColor().getGreen(), getBorderColor().getBlue(), getBorderColor().getOpacity());
-        Color fill = new Color(getFillColor().getRed(), getFillColor().getGreen(), getFillColor().getBlue(), getFillColor().getOpacity());
-        clone.setDrawingProperties(fill, border, getBorderWidth());
-        //default to be unselected
-        clone.unSelect();
-        // TODO: copy mutable state here, so the clone can't change the internals of the original
-        return clone;
     }
 }

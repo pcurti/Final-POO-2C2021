@@ -16,14 +16,12 @@ public class Square extends Rectangle{
     public Square getClone(){
         Square clone = new Square(new Point[points.length]);
         //copying points
-        for (int i = 0; i < points.length; i++) {
-            clone.points[i] = new Point(points[i].getX(), points[i].getY());
-        }
+        clone.points = getClonedPoints();
         clone.topLeft=clone.points[0];
         clone.bottomRight=clone.points[1];
         //copying drawing properties
-        Color border = new Color(getBorderColor().getRed(), getBorderColor().getGreen(), getBorderColor().getBlue(), getBorderColor().getOpacity());
-        Color fill = new Color(getFillColor().getRed(), getFillColor().getGreen(), getFillColor().getBlue(), getFillColor().getOpacity());
+        Color border = cloneColor(getBorderColor());
+        Color fill = cloneColor(getFillColor());
         clone.setDrawingProperties(fill, border, getBorderWidth());
         //default to be unselected
         clone.unSelect();

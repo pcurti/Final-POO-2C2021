@@ -188,7 +188,6 @@ public class PaintPane extends BorderPane {
 		canvas.setOnMouseDragged(onMouseDragged());
 	}
 
-
 	private EventHandler<javafx.scene.input.MouseEvent> onMouseDragged() {
 
 		return mouseEvent -> {

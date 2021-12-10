@@ -24,6 +24,10 @@ public  interface DrawingProperties {
          setBorderWidth(width);
      }
 
+    default Color cloneColor(Color color) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity());
+    }
+
     default void loadDrawingProperties(GraphicsContext gc) {
         gc.setStroke(getBorderColor());
         gc.setLineWidth(getBorderWidth());
