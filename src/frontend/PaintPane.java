@@ -7,12 +7,14 @@ import backend.model.Point;
 import backend.model.Rectangle;
 import frontend.FigureHandler.*;
 import javafx.beans.value.ChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -24,32 +26,36 @@ import java.util.List;
 public class PaintPane extends BorderPane {
 
 	// BackEnd
-	CanvasState canvasState;
-	CanvasHistory canvasHistory = new CanvasHistory();
+	private CanvasState canvasState;
+	private final CanvasHistory canvasHistory = new CanvasHistory();
 
 	// Canvas y relacionados
-	Canvas canvas = new Canvas(800, 600);
-	GraphicsContext gc = canvas.getGraphicsContext2D();
-	Color lineColor = Color.BLACK;
-	Color fillColor = Color.YELLOW;
+	private final Canvas canvas = new Canvas(800, 600);
+	private final GraphicsContext gc = canvas.getGraphicsContext2D();
+
+	//DRAWING DEFAULTS
+	private final Color DEFAULT_BORDER_COLOR = Color.BLACK;
+	private final Color DEFAULT_FILL_COLOR = Color.YELLOW;
+	private final double DEFAULT_LINE_WIDTH = 1;
+
 
 	// Botones Barra Izquierda
-	ToggleButton selectionButton = new ToggleButton("Seleccionar");
-	ToggleButton rectangleButton = new ToggleButton("Rectangulo");
-	ToggleButton circleButton = new ToggleButton("Circulo");
-	ToggleButton squareButton = new ToggleButton("Cuadrado");
-	ToggleButton lineButton = new ToggleButton("Linea");
-	ToggleButton ellipseButton = new ToggleButton("Elipse");
-	ToggleButton deleteFigure = new ToggleButton("Eliminar");
-	ToggleButton toFront = new ToggleButton("Traer al frente");
-	ToggleButton toBack = new ToggleButton("Enviar al fondo");
-	ToggleButton undo = new ToggleButton("Deshacer");
-	ToggleButton redo = new ToggleButton("Rehacer");
+	private final ToggleButton selectionButton = new ToggleButton("Seleccionar");
+	private final ToggleButton rectangleButton = new ToggleButton("Rectangulo");
+	private final ToggleButton circleButton = new ToggleButton("Circulo");
+	private final ToggleButton squareButton = new ToggleButton("Cuadrado");
+	private final ToggleButton lineButton = new ToggleButton("Linea");
+	private final ToggleButton ellipseButton = new ToggleButton("Elipse");
+	private final ToggleButton deleteFigure = new ToggleButton("Eliminar");
+	private final ToggleButton toFront = new ToggleButton("Traer al frente");
+	private final ToggleButton toBack = new ToggleButton("Enviar al fondo");
+	private final ToggleButton undo = new ToggleButton("Deshacer");
+	private final ToggleButton redo = new ToggleButton("Rehacer");
 
 	//Modification tools
-	Slider slider = new Slider(1, 50, 26);
-	final ColorPicker fillPicker = new ColorPicker();
-	final ColorPicker borderPicker = new ColorPicker();
+	private final Slider slider = new Slider(1, 50, 26);
+	private final ColorPicker fillPicker = new ColorPicker();
+	private final ColorPicker borderPicker = new ColorPicker();
 
 
 	// Dibujar una figura
@@ -58,38 +64,40 @@ public class PaintPane extends BorderPane {
 	// StatusBar
 	StatusPane statusPane;
 
-	// Selected figure set
+	// Selected figure list
 	List<Figure> selectedFigureList = new LinkedList<>();
 
 	public PaintPane(CanvasState canvasState, StatusPane statusPane) {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
-		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton, deleteFigure,toBack,toFront, undo, redo};
+
 		canvasHistory.addHistory(getCanvasState());
+
+
+		//setting up buttons and groups
+		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton};
+		ToggleButton[] operationsArr = {deleteFigure, undo, redo, toBack, toFront};
 		ToggleGroup tools = new ToggleGroup();
+		ToggleGroup operations = new ToggleGroup();
+		addToGroup(toolsArr, tools);
+		addToGroup(operationsArr, operations);
 
-		for (ToggleButton tool : toolsArr) {
-			tool.setMinWidth(90);
-			tool.setToggleGroup(tools);
-			tool.setCursor(Cursor.HAND);
-		}
-
-		deleteFigure.setToggleGroup(null);
-		undo.setToggleGroup(null);
-		redo.setToggleGroup(null);
-		toBack.setToggleGroup(null);
-		toFront.setToggleGroup(null);
+		//setting up each figure handler with his own button
 		rectangleButton.setUserData(new RectangleHandler(this));
 		circleButton.setUserData(new CircleHandler(this));
 		squareButton.setUserData(new SquareHandler(this));
 		lineButton.setUserData(new LineHandler(this));
 		ellipseButton.setUserData(new EllipseHandler(this));
+
+		//adding buttons to left panel
 		VBox buttonsBox = new VBox(10);
 		buttonsBox.getChildren().addAll(toolsArr);
+		buttonsBox.getChildren().addAll(operationsArr);
 		buttonsBox.setPadding(new Insets(5));
 		buttonsBox.setStyle("-fx-background-color: #999");
 		buttonsBox.setPrefWidth(100);
-		gc.setLineWidth(1);
+
+		//setting drawing properties tools
 		slider.setShowTickMarks(true);
 		slider.setShowTickLabels(true);
 		slider.setMajorTickUnit(25);
@@ -102,82 +110,38 @@ public class PaintPane extends BorderPane {
 		fillPicker.getStyleClass().add("button");
 		buttonsBox.getChildren().add(new Label("Relleno"));
 		buttonsBox.getChildren().add(fillPicker);
-		slider.setValue(1);
-		fillPicker.setValue(fillColor);
-		borderPicker.setValue(lineColor);
 
+		//setting default drawing properties
+		slider.setValue(DEFAULT_LINE_WIDTH);
+		fillPicker.setValue(DEFAULT_FILL_COLOR);
+		borderPicker.setValue(DEFAULT_BORDER_COLOR);
+		gc.setLineWidth(DEFAULT_LINE_WIDTH);
+
+
+		//adding listeners to drawing properties tools
 		slider.valueChangingProperty().addListener(strokeListener());
 		borderPicker.valueProperty().addListener(borderListener());
 		fillPicker.valueProperty().addListener(fillListener());
 
-		undo.setOnAction(actionEvent -> {
-			if(canvasHistory.canUndo()) {
-				setCanvasState(canvasHistory.getPreviousState());
-				redrawCanvas();
-			}
-			undo.setSelected(false);
-		});
 
-		redo.setOnAction(actionEvent -> {
-			if(canvasHistory.canRedo()) {
-				setCanvasState(canvasHistory.getNextState());
-				redrawCanvas();
-			}
-			redo.setSelected(false);
-		});
-
-
-		deleteFigure.setOnAction(actionEvent -> {
-			if(!selectedFigureList.isEmpty()) {
-
-				for(Figure figure: selectedFigureList) {
-					this.canvasState.removeFigure(figure);
-				}
-				selectedFigureList.clear();
-				redrawCanvas();
-				canvasHistory.addHistory(getCanvasState());
-			}
-			deleteFigure.setSelected(false);
-		});
-		toFront.setOnAction(actionEvent ->{
-			if(!selectedFigureList.isEmpty()){
-
-				for(Figure figure: selectedFigureList) {
-					this.canvasState.removeFigure(figure);
-					this.canvasState.addFigure(figure);
-				}
-				redrawCanvas();
-				canvasHistory.addHistory(getCanvasState());
-			}
-			toFront.setSelected(false);
-		} );
-		toBack.setOnAction(actionEvent ->{
-			if(!selectedFigureList.isEmpty()){
-
-				for(Figure figure: selectedFigureList) {
-					this.canvasState.removeFigure(figure);
-					this.canvasState.moveToBack(figure);
-				}
-				redrawCanvas();
-				canvasHistory.addHistory(getCanvasState());
-			}
-			toBack.setSelected(false);
-		} );
+		//setting up operation buttons' behaviours
+		undo.setOnAction(undoHandler());
+		redo.setOnAction(redoHandler());
+		deleteFigure.setOnAction(deleteHandler());
+		toFront.setOnAction(sendToFrontHandler());
+		toBack.setOnAction(sendToBackHandler());
 		setCanvasEvents(tools);
 
 		setLeft(buttonsBox);
 		setRight(canvas);
 	}
 
-	private void redrawCanvas() {
-		gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		for(Figure figure : this.canvasState.figures()) {
-			figure.drawFigure(gc);
+	private void addToGroup(ToggleButton[] buttons, ToggleGroup group) {
+		for (ToggleButton button : buttons) {
+			button.setMinWidth(90);
+			button.setToggleGroup(group);
+			button.setCursor(Cursor.HAND);
 		}
-	}
-
-	public GraphicsContext getContext() {
-		return gc;
 	}
 
 	private void setCanvasEvents(ToggleGroup tools) {
@@ -188,7 +152,7 @@ public class PaintPane extends BorderPane {
 		canvas.setOnMouseDragged(onMouseDragged());
 	}
 
-	private EventHandler<javafx.scene.input.MouseEvent> onMouseDragged() {
+	private EventHandler<MouseEvent> onMouseDragged() {
 
 		return mouseEvent -> {
 			if(selectionButton.isSelected() && !selectedFigureList.isEmpty()) {
@@ -204,7 +168,7 @@ public class PaintPane extends BorderPane {
 		};
 	}
 
-	private EventHandler<javafx.scene.input.MouseEvent> onMouseClicked() {
+	private EventHandler<MouseEvent> onMouseClicked() {
 
 		return mouseEvent -> {
 
@@ -236,7 +200,7 @@ public class PaintPane extends BorderPane {
 		};
 	}
 
-	private EventHandler<javafx.scene.input.MouseEvent> onMouseMoved() {
+	private EventHandler<MouseEvent> onMouseMoved() {
 
 		return mouseEvent -> {
 			Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
@@ -256,7 +220,7 @@ public class PaintPane extends BorderPane {
 		};
 	}
 
-	private EventHandler<javafx.scene.input.MouseEvent> onMouseReleased(ToggleGroup tools) {
+	private EventHandler<MouseEvent> onMouseReleased(ToggleGroup tools) {
 		return mouseEvent -> {
 			Point endPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
 			if(startPoint == null){
@@ -301,7 +265,7 @@ public class PaintPane extends BorderPane {
 		};
 	}
 
-	private EventHandler<javafx.scene.input.MouseEvent> onMousePressed() {
+	private EventHandler<MouseEvent> onMousePressed() {
 
 		return mouseEvent -> startPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
 	}
@@ -309,6 +273,7 @@ public class PaintPane extends BorderPane {
 	private ChangeListener<Color> fillListener() {
 		return (observableValue, color, t1) -> {
 			if(!selectedFigureList.isEmpty()) {
+				statusPane.updateStatus(String.format("NUEVO COLOR DE RELLENO: %s", borderPicker.getValue()));
 				for(Figure figure : selectedFigureList) {
 					figure.setFillColor(fillPicker.getValue());
 				}
@@ -321,6 +286,7 @@ public class PaintPane extends BorderPane {
 	private ChangeListener<Color> borderListener() {
 		return (observableValue, color, t1) -> {
 			if(!selectedFigureList.isEmpty() ) {
+				statusPane.updateStatus(String.format("NUEVO COLOR DE BORDE: %s", borderPicker.getValue()));
 				for(Figure figure : selectedFigureList) {
 					figure.setBorderColor(borderPicker.getValue());
 				}
@@ -329,15 +295,12 @@ public class PaintPane extends BorderPane {
 			}
 		};
 	}
-	private void unselectFigureList() {
-		for (Figure figure : selectedFigureList)
-			figure.unSelect();
-		selectedFigureList.clear();
-	}
+
 	private ChangeListener<Boolean> strokeListener() {
 		return (observableValue, aBoolean, t1) -> {
 			if(!slider.isValueChanging()) {
 				if(!selectedFigureList.isEmpty()) {
+					statusPane.updateStatus(String.format("NUEVO GROSOR: %.1f", slider.getValue()));
 					for(Figure figure : selectedFigureList) {
 						figure.setBorderWidth(slider.getValue());
 					}
@@ -348,13 +311,96 @@ public class PaintPane extends BorderPane {
 		};
 	}
 
+	private EventHandler<ActionEvent> sendToFrontHandler() {
+		return actionEvent ->{
+			if(!selectedFigureList.isEmpty()){
+				statusPane.updateStatus("EL USUARIO ENVIO AL FRENTE FIGURA(S)");
+				for(Figure figure: selectedFigureList) {
+					this.canvasState.removeFigure(figure);
+					this.canvasState.addFigure(figure);
+				}
+				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
+			}
+			toFront.setSelected(false);
+		};
+	}
 
-	private CanvasState getCanvasState() {
-		return this.canvasState.getClone();
+	private EventHandler<ActionEvent> sendToBackHandler() {
+		return actionEvent ->{
+			if(!selectedFigureList.isEmpty()){
+				statusPane.updateStatus("EL USUARIO ENVIO AL FONDO FIGURA(S)");
+				for(Figure figure: selectedFigureList) {
+					this.canvasState.removeFigure(figure);
+					this.canvasState.moveToBack(figure);
+				}
+				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
+			}
+			toBack.setSelected(false);
+		};
+	}
+
+	private  EventHandler<ActionEvent> undoHandler() {
+		return actionEvent -> {
+			if(canvasHistory.canUndo()) {
+				statusPane.updateStatus("EL USUARIO DES-HIZO UNA OPERACION");
+				setCanvasState(canvasHistory.getPreviousState());
+				redrawCanvas();
+			}
+			undo.setSelected(false);
+		};
+	}
+
+	private  EventHandler<ActionEvent> deleteHandler() {
+		return actionEvent -> {
+			if(!selectedFigureList.isEmpty()) {
+				statusPane.updateStatus("EL USUARIO ELIMINO FIGURA(S)");
+				for(Figure figure: selectedFigureList) {
+					this.canvasState.removeFigure(figure);
+				}
+				selectedFigureList.clear();
+				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
+
+			}
+			deleteFigure.setSelected(false);
+		};
+	}
+
+	private  EventHandler<ActionEvent> redoHandler() {
+		return actionEvent -> {
+			if(canvasHistory.canRedo()) {
+				statusPane.updateStatus("EL USUARIO RE-HIZO UNA OPERACION");
+				setCanvasState(canvasHistory.getNextState());
+				redrawCanvas();
+			}
+			redo.setSelected(false);
+		};
+	}
+
+	private void unselectFigureList() {
+		for (Figure figure : selectedFigureList)
+			figure.unSelect();
+		selectedFigureList.clear();
 	}
 
 	private void setCanvasState(CanvasState state) {
 		this.canvasState = state;
 	}
 
+	private CanvasState getCanvasState() {
+		return this.canvasState.getClone();
+	}
+
+	public GraphicsContext getContext() {
+		return gc;
+	}
+
+	private void redrawCanvas() {
+		gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		for(Figure figure : this.canvasState.figures()) {
+			figure.drawFigure(gc);
+		}
+	}
 }
