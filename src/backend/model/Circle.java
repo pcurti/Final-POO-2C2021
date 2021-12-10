@@ -39,7 +39,7 @@ public class Circle extends Figure {
     }
 
     @Override
-    public Circle clone() {
+    public Circle getClone() {
         Circle clone = new Circle(new Point[points.length],radius);
         //copying points
         for (int i = 0; i < points.length; i++) {

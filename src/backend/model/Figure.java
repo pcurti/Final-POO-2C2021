@@ -1,9 +1,10 @@
 package backend.model;
 
+import backend.Clone;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public abstract class Figure implements DrawingProperties, Cloneable {
+public abstract class Figure implements DrawingProperties, Clone<Figure>{
         protected Point[] points;
         private Color borderColor;
         private Color fillColor;
@@ -14,9 +15,6 @@ public abstract class Figure implements DrawingProperties, Cloneable {
                 this.points = points;
         }
 
-        public Point[] getPoints() {
-                return points.clone();
-        }
         public void changePosition(double diffX, double diffY) {
                 for(Point point : points) {
                         point.setX(point.getX() + diffX);
@@ -59,7 +57,9 @@ public abstract class Figure implements DrawingProperties, Cloneable {
                         gc.setStroke(Color.RED);
                 draw(gc);
         }
+
         public abstract boolean isContainedIn(Rectangle container);
+
         public void select() {
                 selected = true;
         }
@@ -67,5 +67,15 @@ public abstract class Figure implements DrawingProperties, Cloneable {
                 selected = false;
         }
 
-        public abstract Figure clone();
+        public abstract Figure getClone();
+
+
+        public Point[] getClonedPoints() {
+                Point[] copy = new Point[points.length];
+                int i = 0;
+                for (Point point : points) {
+                        copy[i++] = point.getClone();
+                }
+                return copy;
+        }
 }

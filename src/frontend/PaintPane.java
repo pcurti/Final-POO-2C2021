@@ -1,13 +1,12 @@
 package frontend;
 
 import backend.CanvasState;
-import backend.canvasHistory.CanvasHistory;
+import backend.CanvasHistory;
 import backend.model.Figure;
 import backend.model.Point;
 import backend.model.Rectangle;
 import frontend.FigureHandler.*;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
@@ -110,7 +109,6 @@ public class PaintPane extends BorderPane {
 		slider.valueChangingProperty().addListener(strokeListener());
 		borderPicker.valueProperty().addListener(borderListener());
 		fillPicker.valueProperty().addListener(fillListener());
-		//canvasHistory.addHistory(getCanvasState());
 
 		undo.setOnAction(actionEvent -> {
 			if(canvasHistory.canUndo()) {
@@ -193,10 +191,8 @@ public class PaintPane extends BorderPane {
 
 	private EventHandler<javafx.scene.input.MouseEvent> onMouseDragged() {
 
-		return new EventHandler<javafx.scene.input.MouseEvent>() {
-			@Override
-			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				if(selectionButton.isSelected() && !selectedFigureList.isEmpty()) {
+		return mouseEvent -> {
+			if(selectionButton.isSelected() && !selectedFigureList.isEmpty()) {
 				Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
 				double diffX = (eventPoint.getX() - startPoint.getX());
 				double diffY = (eventPoint.getY() - startPoint.getY());
@@ -204,156 +200,133 @@ public class PaintPane extends BorderPane {
 					figure.changePosition(diffX, diffY);
 				}
 				redrawCanvas();
-
-
 				startPoint = eventPoint;
-			}
 			}
 		};
 	}
 
 	private EventHandler<javafx.scene.input.MouseEvent> onMouseClicked() {
 
-		return  new EventHandler<javafx.scene.input.MouseEvent>() {
-			@Override
-			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
+		return mouseEvent -> {
 
-				if (selectionButton.isSelected() && selectedFigureList.isEmpty()) {
-					Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-					boolean found = false;
-					StringBuilder label = new StringBuilder("Se seleccionó: ");
+			if (selectionButton.isSelected() && selectedFigureList.isEmpty()) {
+				Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+				boolean found = false;
+				StringBuilder label = new StringBuilder("Se seleccionó: ");
 
-					Iterator<Figure> it= canvasState.reverseFigures().iterator();
-					Figure figure;
-					while(it.hasNext() && !found) {
-						figure = it.next();
-						if (figure.hasPoint(eventPoint)) {
-							found = true;
-							selectedFigureList.add(figure);
-							figure.select();
-							label.append(figure);
-						}
-
+				Iterator<Figure> it= canvasState.reverseFigures().iterator();
+				Figure figure;
+				while(it.hasNext() && !found) {
+					figure = it.next();
+					if (figure.hasPoint(eventPoint)) {
+						found = true;
+						selectedFigureList.add(figure);
+						figure.select();
+						label.append(figure);
 					}
-					if (found) {
-						statusPane.updateStatus(label.toString());
-					} else {
-						selectedFigureList.clear();
-						statusPane.updateStatus("Ninguna figura encontrada");
-					}
-					redrawCanvas();
+
 				}
+				if (found) {
+					statusPane.updateStatus(label.toString());
+				} else {
+					selectedFigureList.clear();
+					statusPane.updateStatus("Ninguna figura encontrada");
+				}
+				redrawCanvas();
 			}
 		};
 	}
 
 	private EventHandler<javafx.scene.input.MouseEvent> onMouseMoved() {
 
-		return new EventHandler<javafx.scene.input.MouseEvent>() {
-			@Override
-			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-				boolean found = false;
-				StringBuilder label = new StringBuilder();
-				for(Figure figure : canvasState.figures()) {
-					if(figure.hasPoint(eventPoint)) {
-						found = true;
-						label.append(figure.toString());
-					}
+		return mouseEvent -> {
+			Point eventPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+			boolean found = false;
+			StringBuilder label = new StringBuilder();
+			for (Figure figure : canvasState.figures()) {
+				if (figure.hasPoint(eventPoint)) {
+					found = true;
+					label.append(figure);
 				}
-				if(found) {
-					statusPane.updateStatus(label.toString());
-				} else {
-					statusPane.updateStatus(eventPoint.toString());
-				}
+			}
+			if(found) {
+				statusPane.updateStatus(label.toString());
+			} else {
+				statusPane.updateStatus(eventPoint.toString());
 			}
 		};
 	}
 
 	private EventHandler<javafx.scene.input.MouseEvent> onMouseReleased(ToggleGroup tools) {
-		return new EventHandler<javafx.scene.input.MouseEvent>() {
-			@Override
-			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				Point endPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-				if(startPoint == null){
-					return;
-				}
-				Figure newFigure = null;
-				Toggle selected = tools.getSelectedToggle();
-				if(selected == null)
-					return;
-				unselectFigureList();
-
-				if(selectionButton.isSelected()) {
-					Rectangle areaSelected =(Rectangle)((FigureHandler)rectangleButton.getUserData()).createFigure(startPoint,endPoint);
-					if(areaSelected == null){
-						return;
-					}
-					StringBuilder label = new StringBuilder("Se seleccionó: ");
-					for(Figure figure : canvasState.figures()){
-						if(figure.isContainedIn(areaSelected)){
-							selectedFigureList.add(figure);
-							figure.select();
-							label.append(figure);
-						}
-					}
-					statusPane.updateStatus(label.toString());
-					redrawCanvas();
-					return;
-				}
-
-				gc.setFill(fillPicker.getValue());
-				gc.setStroke(borderPicker.getValue());
-				gc.setLineWidth(slider.getValue());
-				newFigure =  ((FigureHandler) selected.getUserData()).createFigure(startPoint, endPoint);
-				if(newFigure == null)
-					return;
-
-				canvasState.addFigure(newFigure);
-				redrawCanvas();
-                canvasHistory.addHistory(getCanvasState());
-
-				startPoint = null;
+		return mouseEvent -> {
+			Point endPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+			if(startPoint == null){
+				return;
 			}
+
+			Toggle selected = tools.getSelectedToggle();
+			if(selected == null)
+				return;
+			unselectFigureList();
+
+			if(selectionButton.isSelected()) {
+				Rectangle areaSelected =(Rectangle)((FigureHandler)rectangleButton.getUserData()).createFigure(startPoint,endPoint);
+				if(areaSelected == null){
+					return;
+				}
+				StringBuilder label = new StringBuilder("Se seleccionó: ");
+				for(Figure figure : canvasState.figures()){
+					if(figure.isContainedIn(areaSelected)){
+						selectedFigureList.add(figure);
+						figure.select();
+						label.append(figure);
+					}
+				}
+				statusPane.updateStatus(label.toString());
+				redrawCanvas();
+				return;
+			}
+
+			gc.setFill(fillPicker.getValue());
+			gc.setStroke(borderPicker.getValue());
+			gc.setLineWidth(slider.getValue());
+			Figure newFigure = ((FigureHandler) selected.getUserData()).createFigure(startPoint, endPoint);
+			if(newFigure == null)
+				return;
+
+			canvasState.addFigure(newFigure);
+			redrawCanvas();
+			canvasHistory.addHistory(getCanvasState());
+
+			startPoint = null;
 		};
 	}
 
 	private EventHandler<javafx.scene.input.MouseEvent> onMousePressed() {
 
-		return new EventHandler<javafx.scene.input.MouseEvent>() {
-			@Override
-			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				startPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-			}
-		};
+		return mouseEvent -> startPoint = new Point(mouseEvent.getX(), mouseEvent.getY());
 	}
 
 	private ChangeListener<Color> fillListener() {
-		return new ChangeListener<Color>() {
-			@Override
-			public void changed(ObservableValue<? extends Color> observableValue, Color color, Color t1) {
-				if(!selectedFigureList.isEmpty()) {
-					for(Figure figure : selectedFigureList) {
-						figure.setFillColor(fillPicker.getValue());
-					}
-					redrawCanvas();
-					canvasHistory.addHistory(getCanvasState());
+		return (observableValue, color, t1) -> {
+			if(!selectedFigureList.isEmpty()) {
+				for(Figure figure : selectedFigureList) {
+					figure.setFillColor(fillPicker.getValue());
 				}
+				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
 			}
 		};
 	}
 
 	private ChangeListener<Color> borderListener() {
-		return new ChangeListener<Color>() {
-			@Override
-			public void changed(ObservableValue<? extends Color> observableValue, Color color, Color t1) {
-				if(!selectedFigureList.isEmpty() ) {
-					for(Figure figure : selectedFigureList) {
-						figure.setBorderColor(borderPicker.getValue());
-					}
-					redrawCanvas();
-					canvasHistory.addHistory(getCanvasState());
+		return (observableValue, color, t1) -> {
+			if(!selectedFigureList.isEmpty() ) {
+				for(Figure figure : selectedFigureList) {
+					figure.setBorderColor(borderPicker.getValue());
 				}
+				redrawCanvas();
+				canvasHistory.addHistory(getCanvasState());
 			}
 		};
 	}
@@ -363,17 +336,14 @@ public class PaintPane extends BorderPane {
 		selectedFigureList.clear();
 	}
 	private ChangeListener<Boolean> strokeListener() {
-		return new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-				if(!slider.isValueChanging()) {
-					if(!selectedFigureList.isEmpty()) {
-						for(Figure figure : selectedFigureList) {
-							figure.setBorderWidth(slider.getValue());
-						}
-						redrawCanvas();
-						canvasHistory.addHistory(getCanvasState());
+		return (observableValue, aBoolean, t1) -> {
+			if(!slider.isValueChanging()) {
+				if(!selectedFigureList.isEmpty()) {
+					for(Figure figure : selectedFigureList) {
+						figure.setBorderWidth(slider.getValue());
 					}
+					redrawCanvas();
+					canvasHistory.addHistory(getCanvasState());
 				}
 			}
 		};
@@ -381,7 +351,7 @@ public class PaintPane extends BorderPane {
 
 
 	private CanvasState getCanvasState() {
-		return this.canvasState.clone();
+		return this.canvasState.getClone();
 	}
 
 	private void setCanvasState(CanvasState state) {

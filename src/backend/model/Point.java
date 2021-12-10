@@ -1,6 +1,8 @@
 package backend.model;
 
-public class Point{
+import backend.Clone;
+
+public class Point implements Clone<Point> {
 
     private double x, y;
 
@@ -44,5 +46,10 @@ public class Point{
     @Override
     public String toString() {
         return String.format("{%.2f , %.2f}", x, y);
+    }
+
+    @Override
+    public Point getClone() {
+        return new Point(x, y);
     }
 }

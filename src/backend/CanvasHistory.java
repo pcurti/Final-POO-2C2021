@@ -1,12 +1,6 @@
-package backend.canvasHistory;
+package backend;
 
-import backend.CanvasState;
-import frontend.PaintPane;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 public class CanvasHistory {
     private LinkedList<CanvasState> history = new LinkedList<>();
@@ -24,12 +18,12 @@ public class CanvasHistory {
     public CanvasState getPreviousState() {
         if(!canUndo())
             return history.get(lastOperation);
-        return history.get(--lastOperation).clone();
+        return history.get(--lastOperation).getClone();
     }
     public CanvasState getNextState() {
         if(!canRedo())
             return history.get(lastOperation);
-        return history.get(++lastOperation).clone();
+        return history.get(++lastOperation).getClone();
     }
 
     public boolean canUndo() {

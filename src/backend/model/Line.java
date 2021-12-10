@@ -44,12 +44,10 @@ public class Line extends Figure{
         return String.format("Line [%s, %s]", a, b);
     }
     @Override
-    public Line clone(){
+    public Line getClone(){
         Line clone = new Line(new Point[points.length]);
         //copying points
-        for (int i = 0; i < points.length; i++) {
-            clone.points[i] = new Point(points[i].getX(), points[i].getY());
-        }
+        clone.points = getClonedPoints();
         clone.a=clone.points[0];
         clone.b=clone.points[1];
         //copying drawing properties

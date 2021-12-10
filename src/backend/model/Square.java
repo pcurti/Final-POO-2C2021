@@ -13,7 +13,7 @@ public class Square extends Rectangle{
     }
 
     @Override
-    public Square clone(){
+    public Square getClone(){
         Square clone = new Square(new Point[points.length]);
         //copying points
         for (int i = 0; i < points.length; i++) {

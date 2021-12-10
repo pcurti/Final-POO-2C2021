@@ -34,7 +34,7 @@ public class Ellipse extends Rectangle{
     }
 
     @Override
-    public Ellipse clone(){
+    public Ellipse getClone(){
         Ellipse clone = new Ellipse(new Point[points.length]);
         //copying points
         for (int i = 0; i < points.length; i++) {

@@ -14,12 +14,15 @@ public abstract class FigureHandler {
     }
 
     public Figure createFigure(Point startPoint, Point endPoint) {
-        Figure figure = getFigureConstructor(startPoint, endPoint);
+
         try {
+            Figure figure = getFigureConstructor(startPoint, endPoint);
             figure.setDrawingProperties((Color) pane.getContext().getFill(), (Color) pane.getContext().getStroke(), pane.getContext().getLineWidth());
+            return figure;
         }catch(Exception e) {
+            return null;
         }
-        return figure;
+
     }
     public abstract Figure getFigureConstructor(Point startPoint, Point endPoint);
 

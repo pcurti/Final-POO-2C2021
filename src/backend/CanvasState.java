@@ -7,9 +7,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CanvasState{
+public class CanvasState implements  Clone<CanvasState>{
 
-    private final List<Figure> list = new LinkedList<>();
+    private final LinkedList<Figure> list = new LinkedList<>();
 
     public void addFigure(Figure figure) {
         list.add(figure);
@@ -19,22 +19,14 @@ public class CanvasState{
         list.remove(figure);
     }
 
-    public void addFigures(Figure[] figures) {
-        list.addAll(List.of(figures));
-    }
-
-    public void removeFigures(Figure[] figures) {
-        list.removeAll(List.of(figures));
-    }
-
-    public void moveToBack(Figure figure){ ((LinkedList) list).addFirst(figure);}
+    public void moveToBack(Figure figure){ list.addFirst(figure);}
 
     public Iterable<Figure> figures() {
         return new ArrayList<>(list);
     }
 
     public Iterable<Figure> reverseFigures(){
-        Iterator<Figure> it = ((LinkedList)list).descendingIterator();
+        Iterator<Figure> it = list.descendingIterator();
         List<Figure> toReturn = new ArrayList<>();
         while(it.hasNext()){
             toReturn.add(it.next());
@@ -43,11 +35,11 @@ public class CanvasState{
     }
 
 
-    public CanvasState clone() {
+    public CanvasState getClone() {
         CanvasState clone = new CanvasState();
         clone.list.clear();
         for (Figure figure : figures()) {
-            clone.list.add(figure.clone());
+            clone.list.add(figure.getClone());
         }
         return clone;
     }

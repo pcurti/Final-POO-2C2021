@@ -52,12 +52,11 @@ public class Rectangle extends Figure {
     }
 
     @Override
-    public Rectangle clone(){
+    public Rectangle getClone(){
         Rectangle clone = new Rectangle(new Point[points.length]);
         //copying points
-        for (int i = 0; i < points.length; i++) {
-            clone.points[i] = new Point(points[i].getX(), points[i].getY());
-        }
+        clone.points = getClonedPoints();
+
         clone.topLeft=clone.points[0];
         clone.bottomRight=clone.points[1];
         //copying drawing properties
