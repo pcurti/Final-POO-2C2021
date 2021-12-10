@@ -26,7 +26,7 @@ public class PaintPane extends BorderPane {
 
 	// BackEnd
 	CanvasState canvasState;
-	CanvasHistory canvasHistory;
+	CanvasHistory canvasHistory = new CanvasHistory();
 
 	// Canvas y relacionados
 	Canvas canvas = new Canvas(800, 600);
@@ -66,7 +66,6 @@ public class PaintPane extends BorderPane {
 		this.canvasState = canvasState;
 		this.statusPane = statusPane;
 		ToggleButton[] toolsArr = {selectionButton, rectangleButton, circleButton, squareButton, lineButton, ellipseButton, deleteFigure,toBack,toFront, undo, redo};
-		canvasHistory = new CanvasHistory();
 		canvasHistory.addHistory(getCanvasState());
 		ToggleGroup tools = new ToggleGroup();
 
@@ -111,11 +110,10 @@ public class PaintPane extends BorderPane {
 		slider.valueChangingProperty().addListener(strokeListener());
 		borderPicker.valueProperty().addListener(borderListener());
 		fillPicker.valueProperty().addListener(fillListener());
-
+		//canvasHistory.addHistory(getCanvasState());
 
 		undo.setOnAction(actionEvent -> {
 			if(canvasHistory.canUndo()) {
-				System.out.println("Will undo");
 				setCanvasState(canvasHistory.getPreviousState());
 				redrawCanvas();
 			}
@@ -124,7 +122,6 @@ public class PaintPane extends BorderPane {
 
 		redo.setOnAction(actionEvent -> {
 			if(canvasHistory.canRedo()) {
-				System.out.println("Will redo");
 				setCanvasState(canvasHistory.getNextState());
 				redrawCanvas();
 			}
@@ -314,7 +311,8 @@ public class PaintPane extends BorderPane {
 
 				canvasState.addFigure(newFigure);
 				redrawCanvas();
-				canvasHistory.addHistory(getCanvasState());
+                canvasHistory.addHistory(getCanvasState());
+
 				startPoint = null;
 			}
 		};
@@ -339,6 +337,7 @@ public class PaintPane extends BorderPane {
 						figure.setFillColor(fillPicker.getValue());
 					}
 					redrawCanvas();
+					canvasHistory.addHistory(getCanvasState());
 				}
 			}
 		};
@@ -353,6 +352,7 @@ public class PaintPane extends BorderPane {
 						figure.setBorderColor(borderPicker.getValue());
 					}
 					redrawCanvas();
+					canvasHistory.addHistory(getCanvasState());
 				}
 			}
 		};
@@ -372,6 +372,7 @@ public class PaintPane extends BorderPane {
 							figure.setBorderWidth(slider.getValue());
 						}
 						redrawCanvas();
+						canvasHistory.addHistory(getCanvasState());
 					}
 				}
 			}
@@ -380,11 +381,11 @@ public class PaintPane extends BorderPane {
 
 
 	private CanvasState getCanvasState() {
-		return canvasState.clone();
+		return this.canvasState.clone();
 	}
 
 	private void setCanvasState(CanvasState state) {
-		canvasState = state;
+		this.canvasState = state;
 	}
 
 }

@@ -1,10 +1,11 @@
 package backend.model;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class Circle extends Figure {
 
-    private final Point centerPoint;
+    private Point centerPoint;
     private final double radius;
 
     public Circle(Point[] point, double radius) {
@@ -37,4 +38,21 @@ public class Circle extends Figure {
         return container.hasPoint(topLeft) && container.hasPoint(bottomRight);
     }
 
+    @Override
+    public Circle clone() {
+        Circle clone = new Circle(new Point[points.length],radius);
+        //copying points
+        for (int i = 0; i < points.length; i++) {
+            clone.points[i] = new Point(points[i].getX(), points[i].getY());
+        }
+        clone.centerPoint=clone.points[0];
+        //copying drawing properties
+        Color border = new Color(getBorderColor().getRed(), getBorderColor().getGreen(), getBorderColor().getBlue(), getBorderColor().getOpacity());
+        Color fill = new Color(getFillColor().getRed(), getFillColor().getGreen(), getFillColor().getBlue(), getFillColor().getOpacity());
+        clone.setDrawingProperties(fill, border, getBorderWidth());
+        //default to be unselected
+        clone.unSelect();
+        // TODO: copy mutable state here, so the clone can't change the internals of the original
+        return clone;
+    }
 }

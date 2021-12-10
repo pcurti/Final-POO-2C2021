@@ -1,10 +1,11 @@
 package backend.model;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class Rectangle extends Figure {
 
-    private final Point topLeft, bottomRight;
+    protected Point topLeft, bottomRight;
 
     public Rectangle(Point[]points) {
         super(points);
@@ -49,4 +50,25 @@ public class Rectangle extends Figure {
     protected double height() {
         return Math.abs(topLeft.getY() - bottomRight.getY());
     }
+
+    @Override
+    public Rectangle clone(){
+        Rectangle clone = new Rectangle(new Point[points.length]);
+        //copying points
+        for (int i = 0; i < points.length; i++) {
+            clone.points[i] = new Point(points[i].getX(), points[i].getY());
+        }
+        clone.topLeft=clone.points[0];
+        clone.bottomRight=clone.points[1];
+        //copying drawing properties
+        Color border = new Color(getBorderColor().getRed(), getBorderColor().getGreen(), getBorderColor().getBlue(), getBorderColor().getOpacity());
+        Color fill = new Color(getFillColor().getRed(), getFillColor().getGreen(), getFillColor().getBlue(), getFillColor().getOpacity());
+        clone.setDrawingProperties(fill, border, getBorderWidth());
+        //default to be unselected
+        clone.unSelect();
+        // TODO: copy mutable state here, so the clone can't change the internals of the original
+        return clone;
+    }
+
 }
+

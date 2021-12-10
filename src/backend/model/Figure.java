@@ -67,26 +67,5 @@ public abstract class Figure implements DrawingProperties, Cloneable {
                 selected = false;
         }
 
-        //tal vez falle?
-        @Override
-        public Figure clone() {
-                try {
-                        Figure clone = (Figure) super.clone();
-                        //copying points
-                        clone.points = new Point[points.length];
-                        for(int i = 0; i < points.length; i++) {
-                             clone.points[i] = new Point(points[i].getX(), points[i].getY());
-                        }
-                        //copying drawing properties
-                        Color border = new Color(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(), borderColor.getOpacity());
-                        Color fill = new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getOpacity());
-                        clone.setDrawingProperties(fill, border, borderWidth);
-                        //default to be unselected
-                        clone.unSelect();
-                        // TODO: copy mutable state here, so the clone can't change the internals of the original
-                        return clone;
-                } catch (CloneNotSupportedException e) {
-                        throw new AssertionError();
-                }
-        }
+        public abstract Figure clone();
 }
