@@ -5,8 +5,8 @@ import javafx.scene.paint.Color;
 
 public class Ellipse extends Rectangle{
 
-    public Ellipse(Point[]points) {
-        super(points);
+    public Ellipse(Point topLeft, Point bottomRight) {
+        super(topLeft, bottomRight);
     }
 
 
@@ -35,11 +35,7 @@ public class Ellipse extends Rectangle{
 
     @Override
     public Ellipse getClone(){
-        Ellipse clone = new Ellipse(new Point[points.length]);
-        //copying points
-        clone.points = getClonedPoints();
-        clone.topLeft=clone.points[0];
-        clone.bottomRight=clone.points[1];
+        Ellipse clone = new Ellipse(getTopLeft().getClone(), getBottomRight().getClone());
         //copying drawing properties
         Color border = cloneColor(getBorderColor());
         Color fill = cloneColor(getFillColor());

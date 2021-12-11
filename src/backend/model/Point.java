@@ -52,4 +52,5 @@ public class Point implements Clone<Point> {
     public Point getClone() {
         return new Point(x, y);
     }
+
 }

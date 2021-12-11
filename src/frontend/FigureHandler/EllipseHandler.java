@@ -12,8 +12,6 @@ public class EllipseHandler extends FigureHandler{
 
     @Override
     public Figure getFigureConstructor(Point startPoint, Point endPoint) {
-        if(!validPoints(startPoint, endPoint))
-            return null;
-        return new Ellipse(new Point[] {startPoint, endPoint});
+        return new Ellipse(startPoint, endPoint);
     }
 }

@@ -5,12 +5,21 @@ import javafx.scene.paint.Color;
 
 public class Rectangle extends Figure {
 
-    protected Point topLeft, bottomRight;
+    private Point topLeft, bottomRight;
 
-    public Rectangle(Point[]points) {
-        super(points);
-        topLeft = points[0];
-        bottomRight = points[1];
+    public Rectangle(Point topLeft, Point bottomRight) {
+        super(new Point[]{topLeft, bottomRight});
+        if(topLeft == null || bottomRight == null)
+            throw new IllegalArgumentException("Point can't be null");
+        if(topLeft.equals(bottomRight))
+            throw new IllegalArgumentException("Points can't be the same");
+        if(topLeft.getX() > bottomRight.getX())
+            throw new IllegalArgumentException("topLeft point is to the right of the bottomRight point");
+        if(topLeft.getY() > bottomRight.getY())
+            throw new IllegalArgumentException("topLeft point is above of the bottomRight point");
+
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
     }
 
     protected Point getTopLeft() {
@@ -23,11 +32,8 @@ public class Rectangle extends Figure {
 
     @Override
     public Rectangle getClone(){
-        Rectangle clone = new Rectangle(new Point[points.length]);
-        //copying points
-        clone.points = getClonedPoints();
-        clone.topLeft=clone.points[0];
-        clone.bottomRight=clone.points[1];
+
+        Rectangle clone = new Rectangle(topLeft.getClone(), bottomRight.getClone());
         //copying drawing properties
         Color border = cloneColor(getBorderColor());
         Color fill = cloneColor(getFillColor());

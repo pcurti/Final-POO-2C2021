@@ -8,9 +8,9 @@ public class Circle extends Figure {
     private Point centerPoint;
     private final double radius;
 
-    public Circle(Point[] point, double radius) {
-        super(point);
-        this.centerPoint = point[0];
+    public Circle(Point point, double radius) {
+        super(new Point[]{point});
+        this.centerPoint = point;
         this.radius = radius;
     }
 
@@ -40,10 +40,7 @@ public class Circle extends Figure {
 
     @Override
     public Circle getClone() {
-        Circle clone = new Circle(new Point[points.length],radius);
-        //copying points
-        clone.points = getClonedPoints();
-        clone.centerPoint=clone.points[0];
+        Circle clone = new Circle(centerPoint.getClone(),radius);
         //copying drawing properties
         Color border = cloneColor(getBorderColor());
         Color fill = cloneColor(getFillColor());

@@ -403,4 +403,8 @@ public class PaintPane extends BorderPane {
 			figure.drawFigure(gc);
 		}
 	}
+
+	public StatusPane getStatusPane() {
+		return statusPane;
+	}
 }

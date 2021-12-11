@@ -13,9 +13,6 @@ public class RectangleHandler extends FigureHandler{
 
     @Override
     public Figure getFigureConstructor(Point startPoint, Point endPoint) {
-        if(!validPoints(startPoint, endPoint))
-            return null;
-
-        return new Rectangle(new Point[]{startPoint, endPoint});
+        return new Rectangle(startPoint, endPoint);
     }
 }
