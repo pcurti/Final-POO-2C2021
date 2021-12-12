@@ -70,6 +70,8 @@ public abstract class Figure implements DrawingProperties, Clone<Figure> {
                 return borderWidth;
         }
 
+        public boolean isSelected(){return selected;}
+
 
         //FIGURE DRAWING METHOD
         public void drawFigure(GraphicsContext gc) {

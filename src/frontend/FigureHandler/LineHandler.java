@@ -12,6 +12,6 @@ public class LineHandler extends FigureHandler{
 
     @Override
     public Figure getFigureConstructor(Point startPoint, Point endPoint) {
-        return new Line(new Point[] {startPoint, endPoint});
+        return new Line(startPoint,endPoint);
     }
 }

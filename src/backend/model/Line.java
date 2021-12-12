@@ -8,19 +8,15 @@ public class Line extends Figure{
     private Point a, b;
     private final static double CLICK_HELPER = 2;
 
-    public Line(Point[]points) {
-        super(points);
-        this.a = points[0];
-        this.b = points[1];
+    public Line(Point a,Point b) {
+        super(new Point[]{a,b});
+        this.a = a;
+        this.b = b;
     }
 
     @Override
     public Line getClone(){
-        Line clone = new Line(new Point[points.length]);
-        //copying points
-        clone.points = getClonedPoints();
-        clone.a=clone.points[0];
-        clone.b=clone.points[1];
+        Line clone = new Line(a.getClone(),b.getClone());
         //copying drawing properties
         Color border = cloneColor(getBorderColor());
         Color fill = cloneColor(getFillColor());

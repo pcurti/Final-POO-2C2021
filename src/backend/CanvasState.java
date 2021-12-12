@@ -11,6 +11,7 @@ public class CanvasState implements  Clone<CanvasState>{
 
     private final LinkedList<Figure> list = new LinkedList<>();
 
+
     public void addFigure(Figure figure) {
         list.add(figure);
     }
