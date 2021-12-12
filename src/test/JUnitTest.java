@@ -1,6 +1,7 @@
 package test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import backend.CanvasHistory;
 import backend.CanvasState;
 import backend.model.*;
 import javafx.scene.paint.Color;
@@ -33,12 +34,12 @@ public class JUnitTest {
         assertNotEquals(35, move.getBorderWidth());
 
         move.select();
-        assertEquals(true, move.isSelected());
+        assertTrue(move.isSelected());
         move.unSelect();
-        assertEquals(false, move.isSelected());
+        assertFalse(move.isSelected());
 
-        assertEquals(true, move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
-        assertEquals(false, move.hasPoint(new Point(0, 0)));
+        assertTrue(move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
+        assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
         /*
@@ -69,12 +70,12 @@ public class JUnitTest {
         assertNotEquals(35, move.getBorderWidth());
 
         move.select();
-        assertEquals(true, move.isSelected());
+        assertTrue(move.isSelected());
         move.unSelect();
-        assertEquals(false, move.isSelected());
+        assertFalse(move.isSelected());
 
-        assertEquals(true, move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
-        assertEquals(false, move.hasPoint(new Point(0, 0)));
+        assertTrue(move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
+        assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
         /*
@@ -106,12 +107,12 @@ public class JUnitTest {
         assertNotEquals(35, move.getBorderWidth());
 
         move.select();
-        assertEquals(true, move.isSelected());
+        assertTrue(move.isSelected());
         move.unSelect();
-        assertEquals(false, move.isSelected());
+        assertFalse(move.isSelected());
 
-        assertEquals(true, move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
-        assertEquals(false, move.hasPoint(new Point(0, 0)));
+        assertTrue(move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
+        assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
         /*
@@ -143,12 +144,12 @@ public class JUnitTest {
         assertNotEquals(35, move.getBorderWidth());
 
         move.select();
-        assertEquals(true, move.isSelected());
+        assertTrue(move.isSelected());
         move.unSelect();
-        assertEquals(false, move.isSelected());
+        assertFalse(move.isSelected());
 
-        assertEquals(true, move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
-        assertEquals(false, move.hasPoint(new Point(0, 0)));
+        assertTrue(move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
+        assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
        /* Ellipse cloneMove = move.getClone();
@@ -179,12 +180,12 @@ public class JUnitTest {
         assertNotEquals(35, move.getBorderWidth());
 
         move.select();
-        assertEquals(true, move.isSelected());
+        assertTrue(move.isSelected());
         move.unSelect();
-        assertEquals(false, move.isSelected());
+        assertFalse(move.isSelected());
 
-        assertEquals(true, move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
-        assertEquals(false, move.hasPoint(new Point(0, 0)));
+        assertTrue(move.isContainedIn(new Rectangle(new Point(0, 0), new Point(260, 260))));
+        assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
     }
@@ -251,7 +252,46 @@ public class JUnitTest {
 
     }
 
+    @Test
+    public void HistoryCanvasTest() {
+        //creation of new CanvasHistory
+        CanvasHistory test = new CanvasHistory();
+        assertFalse(test.canRedo());
+        assertFalse(test.canUndo());
 
+        //added an empty canvasState,
+        CanvasState emptyCanvas = new CanvasState();
+        test.addHistory(emptyCanvas);
+        assertFalse(test.canRedo());
+        //can't undo since u should always be able to get back to the empty canvas
+        assertFalse(test.canUndo());
+
+
+        //created second canvas with one figure
+        Circle cirAux = new Circle(new Point(100,100),20);
+        cirAux.setDrawingProperties(Color.CORAL,Color.RED,25);
+        CanvasState oneFigureCanvas = emptyCanvas.getClone();
+        oneFigureCanvas.addFigure(cirAux);
+
+        //Added canvas with one figure, can undo, but can't redo, since you're still in the most recent canvas
+        test.addHistory(oneFigureCanvas);
+        assertFalse(test.canRedo());
+        assertTrue(test.canUndo());
+
+        //asking for previous state should bring empty canvas, since is the previous one to the actual
+        assertEquals(test.getPreviousState().figures().toString(),emptyCanvas.figures().toString());
+
+        //now u shouldn't be able to undo, but since you aren't in the most recent one, you can redo
+        assertTrue(test.canRedo());
+        assertFalse(test.canUndo());
+
+        //asking for next state should bring the canvasState with one figure
+        assertEquals(test.getNextState().figures().toString(),oneFigureCanvas.figures().toString());
+
+        //again u should not be able to redo, but u should be able to undo
+        assertFalse(test.canRedo());
+        assertTrue(test.canUndo());
+    }
 
 }
 
