@@ -316,8 +316,7 @@ public class PaintPane extends BorderPane {
 			if(!selectedFigureList.isEmpty()){
 				statusPane.updateStatus("EL USUARIO ENVIO AL FRENTE FIGURA(S)");
 				for(Figure figure: selectedFigureList) {
-					this.canvasState.removeFigure(figure);
-					this.canvasState.addFigure(figure);
+					this.canvasState.moveToFront(figure);
 				}
 				redrawCanvas();
 				canvasHistory.addHistory(getCanvasState());
@@ -331,7 +330,6 @@ public class PaintPane extends BorderPane {
 			if(!selectedFigureList.isEmpty()){
 				statusPane.updateStatus("EL USUARIO ENVIO AL FONDO FIGURA(S)");
 				for(Figure figure: selectedFigureList) {
-					this.canvasState.removeFigure(figure);
 					this.canvasState.moveToBack(figure);
 				}
 				redrawCanvas();

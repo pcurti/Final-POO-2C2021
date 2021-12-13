@@ -20,7 +20,15 @@ public class CanvasState implements  Clone<CanvasState>{
         list.remove(figure);
     }
 
-    public void moveToBack(Figure figure){ list.addFirst(figure);}
+    public void moveToBack(Figure figure){
+        removeFigure(figure);
+        list.addFirst(figure);
+    }
+
+    public void moveToFront(Figure figure){
+        removeFigure(figure);
+        list.addLast(figure);
+    }
 
     public Iterable<Figure> figures() {
         return new ArrayList<>(list);
