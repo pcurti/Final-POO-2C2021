@@ -17,9 +17,6 @@ public class JUnitTest {
     //Rectangle Test
     @Test
     public void testingRectangle() {
-        //Rectangle nullPoints = new Rectangle(null,null);
-        //assertNull(nullPoints);
-
         Rectangle move = new Rectangle(new Point(100, 100), new Point(200, 200));
         Rectangle moveTo = new Rectangle(new Point(150, 150), new Point(250, 250));
 
@@ -42,19 +39,10 @@ public class JUnitTest {
         assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
-        /*
-        Rectangle cloneMove = move.getClone();
-
-        assertEquals(move.toString(),cloneMove.toString());
-        assertEquals(move.getBorderColor(),cloneMove.getBorderColor());
-        assertEquals(move.getFillColor(),cloneMove.getFillColor());
-        assertEquals(move.getBorderWidth(),cloneMove.getBorderWidth());*/
 
     }
     @Test
     public void testingCircle() {
-        //Rectangle nullPoints = new Rectangle(null,null);
-        //assertNull(nullPoints);
 
         Circle move = new Circle(new Point(100, 100), 50);
         Circle moveTo = new Circle(new Point(150, 150), 50);
@@ -78,20 +66,11 @@ public class JUnitTest {
         assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
-        /*
-        Circle cloneMove = move.getClone();
-
-        assertEquals(move.toString(),cloneMove.toString());
-        assertEquals(move.getBorderColor(),cloneMove.getBorderColor());
-        assertEquals(move.getFillColor(),cloneMove.getFillColor());
-        assertEquals(move.getBorderWidth(),cloneMove.getBorderWidth());*/
 
     }
 
     @Test
     public void testingSquare() {
-        //Rectangle nullPoints = new Rectangle(null,null);
-        //assertNull(nullPoints);
 
         Square move = new Square(new Point(100, 100), new Point(120,120));
         Square moveTo = new Square(new Point(150, 150), new Point(170,170));
@@ -115,13 +94,6 @@ public class JUnitTest {
         assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
-        /*
-        Square cloneMove = move.getClone();
-
-        assertEquals(move.toString(),cloneMove.toString());
-        assertEquals(move.getBorderColor(),cloneMove.getBorderColor());
-        assertEquals(move.getFillColor(),cloneMove.getFillColor());
-        assertEquals(move.getBorderWidth(),cloneMove.getBorderWidth());*/
 
     }
 
@@ -152,13 +124,6 @@ public class JUnitTest {
         assertFalse(move.hasPoint(new Point(0, 0)));
 
         testingClone(move);
-       /* Ellipse cloneMove = move.getClone();
-
-        assertEquals(move.toString(),cloneMove.toString());
-        assertEquals(move.getBorderColor(),cloneMove.getBorderColor());
-        assertEquals(move.getFillColor(),cloneMove.getFillColor());
-        assertEquals(move.getBorderWidth(),cloneMove.getBorderWidth());
-*/
     }
 
     @Test
@@ -223,13 +188,20 @@ public class JUnitTest {
         compAux.add(recAux);
         assertIterableEquals(compAux,test.reverseFigures());
         compAux.clear();
+        test.addFigure(recAux);
         compAux.add(cirAux);
         compAux.add(recAux);
-        compAux.add(cirAux);
+        compAux.add(recAux);
         test.moveToBack(cirAux);
         assertIterableEquals(compAux, test.figures());
         compAux.remove(cirAux);
         test.removeFigure(cirAux);
+        assertIterableEquals(compAux, test.figures());
+        compAux.clear();
+        test.moveToFront(cirAux);
+        compAux.add(recAux);
+        compAux.add(recAux);
+        compAux.add(cirAux);
         assertIterableEquals(compAux, test.figures());
 
         CanvasState testClone = test.getClone();
